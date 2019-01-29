@@ -4,7 +4,12 @@
         <title><%= title %></title>
         <link rel='stylesheet' href='/stylesheets/style.css' />
     </head>
-    <body>
-
+    <body class="index">
+        <h1><%= greeting %></h1>
+        <ul class="tasks-list">
+            <% tasks.forEach(function(task){ %>
+                <%- include('task', task); %>
+            <% }); %>
+        </ul>
     </body>
 </html>
