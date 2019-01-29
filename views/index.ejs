@@ -6,10 +6,17 @@
     </head>
     <body class="index">
         <h1><%= greeting %></h1>
-        <ul class="tasks-list">
-            <% tasks.forEach(function(task){ %>
-                <%- include('task', task); %>
-            <% }); %>
-        </ul>
+        <div class="tasks">
+            <form class="new-task-form">
+                <input type="text" name="task-name"><br>
+                <input type="text" name="task-description"><br>
+                <input type="submit" value="<%= add_task_button %>"><br>
+            </form>
+            <ul class="tasks-list">
+                <% tasks.forEach(function(task){ %>
+                    <%- include('task', task); %>
+                <% }); %>
+            </ul>
+        </div>
     </body>
 </html>
