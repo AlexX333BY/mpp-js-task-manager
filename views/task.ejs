@@ -2,9 +2,9 @@
     <form class="task" method="post">
         <div class="task-name"><%= task_name %></div>
         <div class="task-description"><%= task_description %></div>
-        <input class="task-status" type="radio" name="status" value="waiting"><%= waiting %><br>
-        <input class="task-status" type="radio" name="status" value="completing"><%= completing %><br>
-        <input class="task-status" type="radio" name="status" value="completed"><%= completed %><br>
+        <div><input class="task-status" type="radio" name="status" value="waiting"><%= waiting %></div>
+        <div><input class="task-status" type="radio" name="status" value="completing"><%= completing %></div>
+        <div><input class="task-status" type="radio" name="status" value="completed"><%= completed %></div>
         <input class="set-task-status-button" type="submit" value="<%= set_status %>" id="<%= task_id %>" name="set_status">
     </form>
 </li>

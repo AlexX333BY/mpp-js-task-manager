@@ -1,5 +1,6 @@
 body.index {
     text-align: center;
+    padding: 10%;
 }
 
 ul.tasks-list {
@@ -12,8 +13,12 @@ li.task {
 
 }
 
-form.new-task-form {
-
+form.new-task-form, form.task {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding-left: 10%;
+    padding-right: 10%;
 }
 
 form.task {
