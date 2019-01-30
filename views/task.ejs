@@ -1,5 +1,10 @@
 <li class="task">
-    <div class="task-name"><%= task_name %></div>
-    <div class="task-status"><%= task_status %></div>
-    <div class="task-description"><%= task_description %></div>
+    <form class="task" method="post">
+        <div class="task-name"><%= task_name %></div>
+        <div class="task-description"><%= task_description %></div>
+        <input class="task-status" type="radio" name="status" value="waiting"><%= waiting %><br>
+        <input class="task-status" type="radio" name="status" value="completing"><%= completing %><br>
+        <input class="task-status" type="radio" name="status" value="completed"><%= completed %><br>
+        <input class="set-task-status-button" type="submit" value="<%= set_status %>" id="<%= task_id %>" name="set_status">
+    </form>
 </li>

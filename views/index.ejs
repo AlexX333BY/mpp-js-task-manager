@@ -7,7 +7,7 @@
     <body class="index">
         <h1><%= greeting %></h1>
         <div class="tasks">
-            <form class="new-task-form">
+            <form class="new-task-form" method="post" name="add_task">
                 <input type="text" name="task-name"><br>
                 <input type="text" name="task-description"><br>
                 <input type="submit" value="<%= add_task_button %>"><br>
