@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+    <body class="index">
+        <h1><%= greeting %></h1>
+        <div class="goto-buttons">
+            <form method="get" action="/tasks">
+                <input class="goto-button" type="submit" value="<%= gotoTaskList %>" />
+            </form>
+        </div>
+        <form method="post" class="task-input">
+            <table>
+                <tr>
+                    <td class="task-input-description"><%= taskName %></td>
+                    <td class="task-input-fields"><input type="text" name="taskName"></td>
+                </tr>
+                <tr>
+                    <td class="task-input-description"><%= taskAttachment %></td>
+                    <td class="task-input-fields"><input type="file" name="taskAttachment"></td>
+                </tr>
+                <tr>
+                    <td class="task-input-description"><%= taskCompleteDate %></td>
+                    <td class="task-input-fields"><input type="date" name="expectedCompleteDate"></td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>

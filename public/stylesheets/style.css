@@ -17,15 +17,11 @@ li.task-entry {
 }
 
 div.task-name {
-    font-size: 1.5rem;
-}
 
-div.task-description {
-    font-size: 1rem;
 }
 
 div.task-status, div.expired-task-status {
-    font-size: 1rem;
+
 }
 
 div.expired-task-status {
@@ -33,5 +29,26 @@ div.expired-task-status {
 }
 
 input.complete-task-button {
-    font-size: 1rem;
+
+}
+
+div.task-complete-date {
+
+}
+
+form.task-input {
+    display: flex;
+    justify-content: center;
+}
+
+td.task-input-description, td.task-input-fields {
+    padding: 0.25em;
+}
+
+td.task-input-description {
+    text-align: right;
+}
+
+td.task-input-fields {
+    text-align: left;
 }
