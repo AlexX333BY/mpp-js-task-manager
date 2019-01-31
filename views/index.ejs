@@ -6,17 +6,13 @@
     </head>
     <body class="index">
         <h1><%= greeting %></h1>
-        <div class="tasks">
-            <form class="new-task-form" method="post" name="add_task">
-                <input type="text" name="task-name">
-                <input type="text" name="task-description">
-                <input type="submit" value="<%= add_task_button %>">
+        <div class="goto-buttons">
+            <form action="/tasks">
+                <input class="goto-button" type="submit" value="<%= gotoTaskList %>" />
             </form>
-            <ul class="tasks-list">
-                <% tasks.forEach(function(task){ %>
-                    <%- include('task', task); %>
-                <% }); %>
-            </ul>
+            <form action="/add">
+                <input class="goto-button" type="submit" value="<%= gotoAddTask %>" />
+            </form>
         </div>
     </body>
 </html>

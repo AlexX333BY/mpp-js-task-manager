@@ -1,42 +1,13 @@
 body.index {
     text-align: center;
-    padding: 10%;
 }
 
-ul.tasks-list {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
+div.goto-buttons {
+    display: inline-flex;
 }
 
-li.task {
-
-}
-
-form.new-task-form, form.task {
-    display: flex;
-    flex-direction: column;
+input.goto-button {
+    margin: 0.5em;
+    width: 10em;
     text-align: center;
-    padding-left: 10%;
-    padding-right: 10%;
-}
-
-form.task {
-
-}
-
-div.task-name {
-
-}
-
-div.task-description {
-
-}
-
-input.task-status {
-
-}
-
-input.set-task-status-button {
-
 }
