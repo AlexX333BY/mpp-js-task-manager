@@ -6,8 +6,32 @@ div.goto-buttons {
     display: inline-flex;
 }
 
-input.goto-button {
+input.goto-button, input.complete-task-button {
     margin: 0.5em;
     width: 10em;
     text-align: center;
+}
+
+li.task-entry {
+
+}
+
+div.task-name {
+    font-size: 1.5rem;
+}
+
+div.task-description {
+    font-size: 1rem;
+}
+
+div.task-status, div.expired-task-status {
+    font-size: 1rem;
+}
+
+div.expired-task-status {
+    color: red;
+}
+
+input.complete-task-button {
+    font-size: 1rem;
 }
