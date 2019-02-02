@@ -1,47 +1,37 @@
 body.index {
     text-align: center;
+    background-color: lightcyan;
+    font-family: sans-serif;
 }
 
-input.complete-task-button {
-    margin: 0.5em;
-    width: 10em;
-    text-align: center;
+div.tasks-block {
+    display: flex;
+    flex-direction: row;
+    background-color: aquamarine;
+    margin: 0 2em;
+    border-radius: 2em;
 }
 
-li.task-entry {
-
+div.task-list, div.add-task-query {
+    margin: 1em;
+    border-radius: 1em;
+    background-color: mediumaquamarine;
+    padding: 1em;
 }
 
-ul.task-list {
-    list-style-type: none;
+div.task-list {
+    flex-grow: 2;
 }
 
-div.task-name {
-
+div.add-task-query {
+    flex-grow: 1;
 }
 
-div.task-status, div.expired-task-status {
-
-}
-
-div.expired-task-status {
+td.expired-task-status {
     color: red;
 }
 
-input.complete-task-button {
-
-}
-
-div.task-complete-date {
-
-}
-
-form.task-input {
-    display: flex;
-    justify-content: center;
-}
-
-td.task-input-description, td.task-input-fields {
+td.task-input-description, td.task-input-field, td.task-spec, div.status-filter-element {
     padding: 0.25em;
 }
 
@@ -49,6 +39,39 @@ td.task-input-description {
     text-align: right;
 }
 
-td.task-input-fields {
+td.task-input-field {
     text-align: left;
+}
+
+td.task-name {
+    width: 40%;
+}
+
+form.status-filter {
+    display: flex;
+    flex-direction: column;
+}
+
+div.status-filter-entries {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+form.add-task-query {
+    display: flex;
+    justify-content: center;
+}
+
+table.task-list, table.add-task-query {
+    width: 100%;
+}
+
+table.task-list {
+    margin-top: 0.5em;
+    border-collapse: collapse;
+}
+
+tr.task-entry:hover {
+    background-color: aquamarine;
 }

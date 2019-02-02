@@ -1,9 +1,16 @@
-<li>
-    <div class="task-name"><%= taskName %></div>
-    <div class="<%= taskStatusClass %>"><%= taskStatus %></div>
-    <div class="task-complete-date"><%= expectedCompleteDate %></div>
-    <form>
-        <input class="complete-task-button" type="<%= completeTaskButtonType %>" value="<%= completeTask %>" />
-        <input type="hidden" name="taskId" value="<%= taskId %>" />
-    </form>
-</li>
+<tr class="task-entry">
+    <td class="task-name task-spec"><%= taskName %></td>
+    <td class="task-spec"><%= expectedCompleteDate %></td>
+    <td class="<%= taskStatusClass %> task-spec"><%= taskStatus %></td>
+    <td class="task-spec">
+        <form method="get" action="<%= taskAttachment %>">
+            <input type="submit" value="<%= downloadAttachment %>" <%= downloadAttachmentDisabled %> />
+        </form>
+    </td>
+    <td class="task-spec">
+        <form method="post" >
+            <input type="submit" value="<%= completeTask %>" <%= completeTaskDisabled %>/>
+            <input type="hidden" name="taskId" value="<%= taskId %>" />
+        </form>
+    </td>
+</tr>
