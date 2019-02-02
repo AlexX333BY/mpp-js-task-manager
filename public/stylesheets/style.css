@@ -2,11 +2,7 @@ body.index {
     text-align: center;
 }
 
-div.goto-buttons {
-    display: inline-flex;
-}
-
-input.goto-button, input.complete-task-button {
+input.complete-task-button {
     margin: 0.5em;
     width: 10em;
     text-align: center;
