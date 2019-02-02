@@ -3,6 +3,7 @@
     <div class="<%= taskStatusClass %>"><%= taskStatus %></div>
     <div class="task-complete-date"><%= expectedCompleteDate %></div>
     <form>
-        <input class="complete-task-button" type="submit" value="<%= completeTask %>">
+        <input class="complete-task-button" type="<%= completeTaskButtonType %>" value="<%= completeTask %>" />
+        <input type="hidden" name="taskId" value="<%= taskId %>" />
     </form>
 </li>

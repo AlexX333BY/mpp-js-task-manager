@@ -6,6 +6,39 @@
     </head>
     <body class="index">
         <h1><%= greeting %></h1>
-
+        <div class="task-list">
+            <form method="get">
+                <input type="checkbox" checked value="nonCompleted"><%= nonCompletedTasks %>
+                <input type="checkbox" checked value="completed"><%= completedTasks %>
+                <input type="submit" value="<%= filterTasks %>">
+            </form>
+            <ul class="task-list">
+                <% tasks.forEach(function(task) { %>
+                    <%- include('task', task); %>
+                <% }); %>
+            </ul>
+        </div>
+        <div class="add-task-query">
+            <form method="post" class="task-input">
+                <table>
+                    <tr>
+                        <td class="task-input-description"><%= taskName %></td>
+                        <td class="task-input-fields"><input type="text" name="taskName"></td>
+                    </tr>
+                    <tr>
+                        <td class="task-input-description"><%= taskAttachment %></td>
+                        <td class="task-input-fields"><input type="file" name="taskAttachment"></td>
+                    </tr>
+                    <tr>
+                        <td class="task-input-description"><%= taskCompleteDate %></td>
+                        <td class="task-input-fields"><input type="date" name="expectedCompleteDate"></td>
+                    </tr>
+                    <tr>
+                        <td class="task-input-description"></td>
+                        <td class="task-input-fields"><input type="submit" value="<%= submitNewTask %>"></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
     </body>
 </html>

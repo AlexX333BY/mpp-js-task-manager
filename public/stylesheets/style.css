@@ -12,6 +12,10 @@ li.task-entry {
 
 }
 
+ul.task-list {
+    list-style-type: none;
+}
+
 div.task-name {
 
 }
