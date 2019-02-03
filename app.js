@@ -3,7 +3,10 @@ let express = require('express');
 let path = require('path');
 let logger = require('morgan');
 
+global.tasks = new Map();
+
 let indexRouter = require('./routes/index');
+let downloadRouter = require('./routes/download');
 
 let app = express();
 
@@ -16,6 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+app.use('/download', downloadRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

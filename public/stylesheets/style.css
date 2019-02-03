@@ -27,10 +27,6 @@ div.add-task-query {
     flex-grow: 1;
 }
 
-td.expired-task-status {
-    color: red;
-}
-
 td.task-input-description, td.task-input-field, td.task-spec, div.status-filter-element {
     padding: 0.25em;
 }
@@ -72,6 +68,10 @@ table.task-list {
     border-collapse: collapse;
 }
 
-tr.task-entry:hover {
+tr.task-entry:hover, tr.expired-task-entry:hover {
     background-color: aquamarine;
+}
+
+tr.expired-task-entry {
+    color: red;
 }

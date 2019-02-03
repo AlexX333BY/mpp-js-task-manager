@@ -2,11 +2,6 @@ let express = require('express');
 let router = express.Router();
 
 class Task {
-    /*name;
-    completeDate;
-    attachmentFileName;
-    status;*/
-
     constructor(name, completeDate, attachmentFileName = null) {
         this.attachmentFileName = attachmentFileName;
         this.completeDate = completeDate;
@@ -27,9 +22,8 @@ let localization = { title: 'Task Manager', greeting: 'Welcome to Task Manager!'
     taskAttachmentQuery: 'Attachment', taskCompleteDateQuery: 'Completion date',
     submitTaskButton: 'Submit task', nonCompletedTasks: 'Non-completed tasks', completedTasks: 'Completed tasks',
     filterTasks: 'Filter tasks', taskListHeader: 'Tasks', addTaskHeader: 'Add new task',
-    completeTaskButton: 'Complete', downloadAttachment: 'Download attachment' };
-
-let tasks = new Map();
+    completeTaskButton: 'Complete', downloadAttachment: 'Download attachment',
+    completedStatus: 'Completed', nonCompletedStatus: 'Not completed' };
 
 router.get('/', function (req, res, next) {
     let renderTasks = [];
@@ -69,13 +63,17 @@ function isObjectEmpty(obj) {
 }
 
 function createTaskEntry(task, taskId) {
-    let taskEntry = { taskId: taskId, taskName: task.name, expectedCompleteDate: task.completeDate,
-        taskStatus: task.status, taskAttachment: task.attachmentFileName,
+    let taskEntry = { taskId: taskId, taskName: task.name, taskAttachment: task.attachmentFileName,
         downloadAttachment: localization.downloadAttachment, completeTask: localization.completeTaskButton };
 
+    taskEntry.expectedCompleteDate = task.completeDate.getDate() + '.' + (task.completeDate.getMonth() + 1) + '.'
+        + task.completeDate.getFullYear();
+
     if (task.isCompleted()) {
+        taskEntry.taskStatus = localization.completedStatus;
         taskEntry.completeTaskDisabled = 'disabled';
     } else {
+        taskEntry.taskStatus = localization.nonCompletedStatus;
         taskEntry.completeTaskDisabled = '';
     }
 
@@ -86,9 +84,9 @@ function createTaskEntry(task, taskId) {
     }
 
     if (task.isExpired()) {
-        taskEntry.taskStatusClass = 'expired-task-status';
+        taskEntry.taskEntryClass = 'expired-task-entry';
     } else {
-        taskEntry.taskStatusClass = 'task-status';
+        taskEntry.taskEntryClass = 'task-entry';
     }
 
     return taskEntry;

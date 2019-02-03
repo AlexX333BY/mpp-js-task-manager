@@ -1,7 +1,7 @@
-<tr class="task-entry">
+<tr class="<%= taskEntryClass %>">
     <td class="task-name task-spec"><%= taskName %></td>
     <td class="task-spec"><%= expectedCompleteDate %></td>
-    <td class="<%= taskStatusClass %> task-spec"><%= taskStatus %></td>
+    <td class="task-spec"><%= taskStatus %></td>
     <td class="task-spec">
         <form method="get" action="/download">
             <input type="submit" value="<%= downloadAttachment %>" <%= downloadAttachmentDisabled %> />
