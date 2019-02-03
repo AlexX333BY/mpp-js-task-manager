@@ -2,32 +2,8 @@ let express = require('express');
 let router = express.Router();
 let path = require('path');
 let fs = require('fs');
-
-const attachmentsPath = './attachments/';
-if (!fs.existsSync(attachmentsPath)){
-    fs.mkdirSync(attachmentsPath);
-}
-
-class Task {
-    constructor(name, completeDate, attachmentFileName = null) {
-        this.attachmentFileName = attachmentFileName;
-        this.completeDate = completeDate;
-        this.name = name;
-        this.status = 'nonCompleted';
-    }
-
-    isCompleted() {
-        return this.status === 'completed';
-    }
-
-    isExpired() {
-        return (!this.isCompleted() && (this.completeDate < new Date()));
-    }
-    
-    complete() {
-        this.status = 'completed';
-    }
-}
+let Task = require('..' + path.sep + 'task');
+let taskSerializer = require('..' + path.sep + 'task-serializer');
 
 let localization = { title: 'Task Manager', greeting: 'Welcome to Task Manager!', taskNameQuery: 'Name',
     taskAttachmentQuery: 'Attachment', taskCompleteDateQuery: 'Completion date',
@@ -90,7 +66,7 @@ function addTask(req, res) {
         newTaskId = tasks.length;
 
     if (attachment != undefined) {
-        let attachmentPath = attachmentsPath + newTaskId + path.sep;
+        let attachmentPath = attachmentsDirectory + newTaskId + path.sep;
         if (!fs.existsSync(attachmentPath)){
             fs.mkdirSync(attachmentPath);
         }
@@ -100,6 +76,7 @@ function addTask(req, res) {
     }
 
     tasks[newTaskId] = new Task(req.body['taskName'], new Date(req.body['expectedCompleteDate']), attachmentFileName);
+    fs.writeFileSync(tasksPath, taskSerializer.serializeTaskArray(tasks));
     renderIndex(req, res);
 }
 

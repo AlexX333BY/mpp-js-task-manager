@@ -3,13 +3,33 @@ let express = require('express');
 let path = require('path');
 let logger = require('morgan');
 let fileUpload = require('express-fileupload');
+let taskSerializer = require('.' + path.sep + 'task-serializer');
+let fs = require('fs');
 
-global.tasks = [];
-
-let indexRouter = require('./routes/index');
-let downloadRouter = require('./routes/download');
+let indexRouter = require('.' + path.sep + path.join('routes', 'index'));
+let downloadRouter = require('.' + path.sep + path.join('routes', 'download'));
 
 let app = express();
+
+function initStorage() {
+    global.tasksDirectory = '.' + path.sep + 'tasks' + path.sep;
+    global.tasksPath = path.join(tasksDirectory, 'tasks.dat');
+    global.attachmentsDirectory = path.join(tasksDirectory, 'attachments') + path.sep;
+
+    if (!fs.existsSync(tasksDirectory)) {
+        fs.mkdirSync(tasksDirectory);
+    }
+
+    if (!fs.existsSync(attachmentsDirectory)) {
+        fs.mkdirSync(attachmentsDirectory);
+    }
+
+    if (fs.existsSync(tasksPath)) {
+        global.tasks = taskSerializer.deserializeTaskArray(fs.readFileSync(tasksPath));
+    } else {
+        global.tasks = [];
+    }
+}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -38,5 +58,6 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error');
 });
+initStorage();
 
 module.exports = app;
