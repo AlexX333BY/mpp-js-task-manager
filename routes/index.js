@@ -3,7 +3,6 @@ const fs = require('fs');
 const express = require('express');
 const router = express.Router();
 const Task = require('..' + path.sep + 'task');
-const taskSerializer = require('..' + path.sep + 'task-serializer');
 
 const localization = { title: 'Task Manager', greeting: 'Welcome to Task Manager!', taskNameQuery: 'Name',
     taskAttachmentQuery: 'Attachment', taskCompleteDateQuery: 'Completion date',
@@ -20,6 +19,7 @@ router.post('/', function (req, res) {
     } else {
         completeTask(req, res);
     }
+    updateStorage();
 });
 
 function renderIndex(req, res) {
@@ -76,7 +76,6 @@ function addTask(req, res) {
     }
 
     tasks[newTaskId] = new Task(req.body['taskName'], new Date(req.body['expectedCompleteDate']), attachmentFileName);
-    fs.writeFileSync(tasksPath, taskSerializer.serializeTaskArray(tasks));
     renderIndex(req, res);
 }
 

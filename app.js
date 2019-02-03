@@ -16,6 +16,10 @@ function initStorage() {
     global.tasksPath = path.join(tasksDirectory, 'tasks.dat');
     global.attachmentsDirectory = path.join(tasksDirectory, 'attachments') + path.sep;
 
+    global.updateStorage = function() {
+        fs.writeFileSync(tasksPath, taskSerializer.serializeTaskArray(tasks));
+    }
+
     if (!fs.existsSync(tasksDirectory)) {
         fs.mkdirSync(tasksDirectory);
     }
@@ -29,6 +33,8 @@ function initStorage() {
     } else {
         global.tasks = [];
     }
+
+    updateStorage();
 }
 
 // view engine setup
