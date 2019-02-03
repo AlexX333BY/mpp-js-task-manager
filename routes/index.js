@@ -89,7 +89,7 @@ function addTask(req, res) {
         attachment = req.files['taskAttachment'],
         newTaskId = tasks.size;
 
-    if (attachment.name) {
+    if (attachment != undefined) {
         let attachmentPath = attachmentsPath + newTaskId + path.sep;
         if (!fs.existsSync(attachmentPath)){
             fs.mkdirSync(attachmentPath);
