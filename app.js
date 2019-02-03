@@ -1,15 +1,15 @@
-let createError = require('http-errors');
-let express = require('express');
-let path = require('path');
-let logger = require('morgan');
-let fileUpload = require('express-fileupload');
-let taskSerializer = require('.' + path.sep + 'task-serializer');
-let fs = require('fs');
+const path = require('path');
+const fs = require('fs');
+const createError = require('http-errors');
+const express = require('express');
+const logger = require('morgan');
+const fileUpload = require('express-fileupload');
+const taskSerializer = require('.' + path.sep + 'task-serializer');
 
-let indexRouter = require('.' + path.sep + path.join('routes', 'index'));
-let downloadRouter = require('.' + path.sep + path.join('routes', 'download'));
+const indexRouter = require('.' + path.sep + path.join('routes', 'index'));
+const downloadRouter = require('.' + path.sep + path.join('routes', 'download'));
 
-let app = express();
+const app = express();
 
 function initStorage() {
     global.tasksDirectory = '.' + path.sep + 'tasks' + path.sep;
@@ -49,7 +49,7 @@ app.use(function(req, res, next) {
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -58,6 +58,7 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error');
 });
+
 initStorage();
 
 module.exports = app;

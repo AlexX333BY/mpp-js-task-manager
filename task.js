@@ -27,7 +27,8 @@ class Task {
             || ((obj.attachmentFileName !== null) && !fs.existsSync(obj.attachmentFileName))) {
             return null;
         } else {
-            let task = new Task(obj.name, new Date(obj.completeDate), obj.attachmentFileName);
+            const task = new Task(obj.name, new Date(obj.completeDate), obj.attachmentFileName);
+
             task.status = obj.status;
             return task;
         }

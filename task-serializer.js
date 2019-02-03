@@ -6,7 +6,7 @@ function serialize(taskArray) {
 }
 
 function deserialize(jsonString) {
-    let deserialized = JSON.parse(jsonString),
+    const deserialized = JSON.parse(jsonString),
         taskArray = [];
 
     if (Array.isArray(deserialized)) {

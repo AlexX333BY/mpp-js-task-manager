@@ -1,11 +1,11 @@
-let express = require('express');
-let router = express.Router();
-let path = require('path');
-let fs = require('fs');
-let Task = require('..' + path.sep + 'task');
-let taskSerializer = require('..' + path.sep + 'task-serializer');
+const path = require('path');
+const fs = require('fs');
+const express = require('express');
+const router = express.Router();
+const Task = require('..' + path.sep + 'task');
+const taskSerializer = require('..' + path.sep + 'task-serializer');
 
-let localization = { title: 'Task Manager', greeting: 'Welcome to Task Manager!', taskNameQuery: 'Name',
+const localization = { title: 'Task Manager', greeting: 'Welcome to Task Manager!', taskNameQuery: 'Name',
     taskAttachmentQuery: 'Attachment', taskCompleteDateQuery: 'Completion date',
     submitTaskButton: 'Submit task', nonCompletedTasks: 'Non-completed tasks', completedTasks: 'Completed tasks',
     filterTasks: 'Filter tasks', taskListHeader: 'Tasks', addTaskHeader: 'Add new task',
@@ -23,13 +23,13 @@ router.post('/', function (req, res) {
 });
 
 function renderIndex(req, res) {
-    let renderTasks = [];
+    const renderTasks = [];
 
     if (isObjectEmpty(req.query)) {
         tasks.forEach((value, index) => renderTasks.push(createTaskEntry(value, index)));
     } else {
-        let statuses = req.query['taskStatus'],
-            filters;
+        const statuses = req.query['taskStatus'];
+        let filters;
 
         if (Array.isArray(statuses)) {
             filters = statuses;
@@ -61,12 +61,12 @@ function completeTask(req, res) {
 }
 
 function addTask(req, res) {
-    let attachmentFileName = null,
-        attachment = req.files['taskAttachment'],
+    let attachmentFileName = null;
+    const attachment = req.files['taskAttachment'],
         newTaskId = tasks.length;
 
-    if (attachment != undefined) {
-        let attachmentPath = attachmentsDirectory + newTaskId + path.sep;
+    if (attachment !== undefined) {
+        const attachmentPath = attachmentsDirectory + newTaskId + path.sep;
         if (!fs.existsSync(attachmentPath)){
             fs.mkdirSync(attachmentPath);
         }
@@ -85,7 +85,7 @@ function isObjectEmpty(obj) {
 }
 
 function createTaskEntry(task, taskId) {
-    let taskEntry = { taskId: taskId, taskName: task.name, taskAttachment: task.attachmentFileName,
+    const taskEntry = { taskId: taskId, taskName: task.name, taskAttachment: task.attachmentFileName,
         downloadAttachment: localization.downloadAttachment, completeTask: localization.completeTaskButton };
 
     taskEntry.expectedCompleteDate = task.completeDate.getDate() + '.' + (task.completeDate.getMonth() + 1) + '.'
