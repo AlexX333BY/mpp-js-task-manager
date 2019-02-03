@@ -3,8 +3,9 @@
     <td class="task-spec"><%= expectedCompleteDate %></td>
     <td class="<%= taskStatusClass %> task-spec"><%= taskStatus %></td>
     <td class="task-spec">
-        <form method="get" action="<%= taskAttachment %>">
+        <form method="get" action="/download">
             <input type="submit" value="<%= downloadAttachment %>" <%= downloadAttachmentDisabled %> />
+            <input type="hidden" name="taskId" value="<%= taskId %>" />
         </form>
     </td>
     <td class="task-spec">
