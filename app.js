@@ -2,6 +2,7 @@ let createError = require('http-errors');
 let express = require('express');
 let path = require('path');
 let logger = require('morgan');
+let fileUpload = require('express-fileupload');
 
 global.tasks = new Map();
 
@@ -14,6 +15,7 @@ let app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(fileUpload());
 app.use(logger('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));

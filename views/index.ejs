@@ -24,11 +24,11 @@
             </div>
             <div class="add-task-query">
                 <h2><%= addTaskHeader %></h2>
-                <form method="post" class="add-task-query">
+                <form method="post" class="add-task-query" encType="multipart/form-data">
                     <table class="add-task-query">
                         <tr>
                             <td class="task-input-description"><%= taskName %></td>
-                            <td class="task-input-field"><input type="text" name="taskName"></td>
+                            <td class="task-input-field"><input type="text" name="taskName" required></td>
                         </tr>
                         <tr>
                             <td class="task-input-description"><%= taskAttachment %></td>
@@ -36,7 +36,7 @@
                         </tr>
                         <tr>
                             <td class="task-input-description"><%= taskCompleteDate %></td>
-                            <td class="task-input-field"><input type="date" name="expectedCompleteDate"></td>
+                            <td class="task-input-field"><input type="date" name="expectedCompleteDate" required></td>
                         </tr>
                         <tr>
                             <td class="task-input-description"></td>
