@@ -50,7 +50,7 @@ function renderIndex(req, res) {
     let renderTasks = [];
 
     if (isObjectEmpty(req.query)) {
-        tasks.forEach((value, key, map) => renderTasks.push(createTaskEntry(value, key)));
+        tasks.forEach((value, index) => renderTasks.push(createTaskEntry(value, index)));
     } else {
         let statuses = req.query['taskStatus'],
             filters;
@@ -63,11 +63,11 @@ function renderIndex(req, res) {
         }
 
         filters.forEach(function (status) {
-            tasks.forEach(function (value, key, map) {
-                if (value.status === status) {
-                    renderTasks.push(createTaskEntry(value, key));
+            for (let index = 0; index < tasks.length; ++index) {
+                if (tasks[index].status === status) {
+                    renderTasks.push(createTaskEntry(tasks[index], index));
                 }
-            })
+            }
         });
     }
 
@@ -80,14 +80,14 @@ function renderIndex(req, res) {
 }
 
 function completeTask(req, res) {
-    tasks.get(parseInt(req.body['taskId'])).complete();
+    tasks[parseInt(req.body['taskId'])].complete();
     renderIndex(req, res);
 }
 
 function addTask(req, res) {
     let attachmentFileName = null,
         attachment = req.files['taskAttachment'],
-        newTaskId = tasks.size;
+        newTaskId = tasks.length;
 
     if (attachment != undefined) {
         let attachmentPath = attachmentsPath + newTaskId + path.sep;
@@ -99,7 +99,7 @@ function addTask(req, res) {
         attachment.mv(attachmentFileName);
     }
 
-    tasks.set(newTaskId, new Task(req.body['taskName'], new Date(req.body['expectedCompleteDate']), attachmentFileName));
+    tasks[newTaskId] = new Task(req.body['taskName'], new Date(req.body['expectedCompleteDate']), attachmentFileName);
     renderIndex(req, res);
 }
 

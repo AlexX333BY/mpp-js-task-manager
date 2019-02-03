@@ -4,7 +4,7 @@ let path = require('path');
 let logger = require('morgan');
 let fileUpload = require('express-fileupload');
 
-global.tasks = new Map();
+global.tasks = [];
 
 let indexRouter = require('./routes/index');
 let downloadRouter = require('./routes/download');
