@@ -42,15 +42,6 @@ function renderIndex(req, res) {
         for (let index = 0; index < filteredTasks.length; ++index) {
             renderTasks.push(createTaskEntry(filteredTasks[index], index))
         }
-        /*
-        filters.forEach(function (status) {
-            for (let index = 0; index < tasks.length; ++index) {
-                if (tasks[index].status === status) {
-                    renderTasks.push(createTaskEntry(tasks[index], index));
-                }
-            }
-        });
-        */
     }
 
     res.render('index', { tasks: renderTasks, title: localization.title, greeting: localization.greeting,
