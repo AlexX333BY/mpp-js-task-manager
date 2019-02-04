@@ -28,7 +28,7 @@ function renderIndex(req, res) {
     if (isObjectEmpty(req.query)) {
         tasks.forEach((value, index) => renderTasks.push(createTaskEntry(value, index)));
     } else {
-        const statuses = req.query['taskStatus'];
+        const statuses = req.query['isCompleted'];
         let filters;
 
         if (Array.isArray(statuses)) {
@@ -38,6 +38,11 @@ function renderIndex(req, res) {
             filters.push(statuses);
         }
 
+        let filteredTasks = tasks.filter((task) => filters.includes(task.isCompleted().toString()));
+        for (let index = 0; index < filteredTasks.length; ++index) {
+            renderTasks.push(createTaskEntry(filteredTasks[index], index))
+        }
+        /*
         filters.forEach(function (status) {
             for (let index = 0; index < tasks.length; ++index) {
                 if (tasks[index].status === status) {
@@ -45,6 +50,7 @@ function renderIndex(req, res) {
                 }
             }
         });
+        */
     }
 
     res.render('index', { tasks: renderTasks, title: localization.title, greeting: localization.greeting,
