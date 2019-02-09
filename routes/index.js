@@ -13,6 +13,31 @@ const localization = { title: 'Task Manager', greeting: 'Welcome to Task Manager
 
 router.get('/', renderIndex);
 
+router.get('/tasks', function (req, res) {
+    const sendingTasks = [];
+
+    if (isObjectEmpty(req.query)) {
+        tasks.forEach((value, index) => sendingTasks.push(createTaskEntry(value, index)));
+    } else {
+        const statuses = req.query['isCompleted'];
+        let filters;
+
+        if (Array.isArray(statuses)) {
+            filters = statuses;
+        } else {
+            filters = [];
+            filters.push(statuses);
+        }
+
+        let filteredTasks = tasks.filter((task) => filters.includes(task.isCompleted().toString()));
+        for (let index = 0; index < filteredTasks.length; ++index) {
+            sendingTasks.push(createTaskEntry(filteredTasks[index], index))
+        }
+    }
+
+    res.send(JSON.stringify(sendingTasks));
+});
+
 router.post('/', function (req, res) {
     if (req.body['taskId'] === undefined) {
         addTask(req, res);
