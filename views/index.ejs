@@ -4,7 +4,7 @@
         <title><%= title %></title>
         <link rel='stylesheet' href='/stylesheets/style.css' />
     </head>
-    <body class="index">
+    <body class="index" onload="updateTasksAsync()">
         <script src="js/tasks-processing.js"></script>
         <h1><%= greeting %></h1>
         <div class="tasks-block">
