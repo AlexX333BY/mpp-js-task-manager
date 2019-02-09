@@ -39,6 +39,8 @@ router.get('/tasks', function (req, res) {
     res.send(JSON.stringify(sendingTasks));
 });
 
+router.get('/favicon.ico', (req, res) => res.status(204).end());
+
 router.post('/', function (req, res) {
     if (req.body['taskId'] === undefined) {
         addTask(req, res);
