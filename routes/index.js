@@ -23,28 +23,7 @@ router.post('/', function (req, res) {
 });
 
 function renderIndex(req, res) {
-    const renderTasks = [];
-
-    if (isObjectEmpty(req.query)) {
-        tasks.forEach((value, index) => renderTasks.push(createTaskEntry(value, index)));
-    } else {
-        const statuses = req.query['isCompleted'];
-        let filters;
-
-        if (Array.isArray(statuses)) {
-            filters = statuses;
-        } else {
-            filters = [];
-            filters.push(statuses);
-        }
-
-        let filteredTasks = tasks.filter((task) => filters.includes(task.isCompleted().toString()));
-        for (let index = 0; index < filteredTasks.length; ++index) {
-            renderTasks.push(createTaskEntry(filteredTasks[index], index))
-        }
-    }
-
-    res.render('index', { tasks: renderTasks, title: localization.title, greeting: localization.greeting,
+    res.render('index', { title: localization.title, greeting: localization.greeting,
         taskName: localization.taskNameQuery, taskAttachment: localization.taskAttachmentQuery,
         taskCompleteDate: localization.taskCompleteDateQuery, submitNewTask: localization.submitTaskButton,
         nonCompletedTasks: localization.nonCompletedTasks, completedTasks: localization.completedTasks,
