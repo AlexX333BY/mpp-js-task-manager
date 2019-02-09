@@ -1,2 +1,2 @@
-# mpp-js-task-manager-1
+# mpp-js-task-manager
 Task #1 of MPP
