@@ -1,8 +1,9 @@
 const path = require('path');
 const fs = require('fs');
 const express = require('express');
+const ejs = require('ejs');
 const router = express.Router();
-const Task = require('..' + path.sep + 'task');
+const Task = require('..' + path.sep + path.join('scripts', 'task'));
 
 const localization = { title: 'Task Manager', greeting: 'Welcome to Task Manager!', taskNameQuery: 'Name',
     taskAttachmentQuery: 'Attachment', taskCompleteDateQuery: 'Completion date',
@@ -111,7 +112,7 @@ function createTaskEntry(task, taskId) {
         taskEntry.taskEntryClass = 'task-entry';
     }
 
-    return taskEntry;
+    return ejs.render(fs.readFileSync(path.join('views', 'task.ejs')).toString(), taskEntry);
 }
 
 module.exports = router;

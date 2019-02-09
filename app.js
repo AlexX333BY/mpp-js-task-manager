@@ -4,7 +4,7 @@ const createError = require('http-errors');
 const express = require('express');
 const logger = require('morgan');
 const fileUpload = require('express-fileupload');
-const taskSerializer = require('.' + path.sep + 'task-serializer');
+const taskSerializer = require('.' + path.sep + path.join('scripts', 'task-serializer'));
 
 const indexRouter = require('.' + path.sep + path.join('routes', 'index'));
 const downloadRouter = require('.' + path.sep + path.join('routes', 'download'));
@@ -18,7 +18,7 @@ function initStorage() {
 
     global.updateStorage = function() {
         fs.writeFileSync(tasksPath, taskSerializer.serializeTaskArray(tasks));
-    }
+    };
 
     if (!fs.existsSync(tasksDirectory)) {
         fs.mkdirSync(tasksDirectory);

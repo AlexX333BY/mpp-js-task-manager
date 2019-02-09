@@ -5,6 +5,7 @@
         <link rel='stylesheet' href='/stylesheets/style.css' />
     </head>
     <body class="index">
+        <script src="js/tasks-processing.js"></script>
         <h1><%= greeting %></h1>
         <div class="tasks-block">
             <div class="task-list">
@@ -14,7 +15,7 @@
                         <div class="status-filter-element"><input type="checkbox" checked name="isCompleted" value="false"><%= nonCompletedTasks %></div>
                         <div class="status-filter-element"><input type="checkbox" checked name="isCompleted" value="true"><%= completedTasks %></div>
                     </div>
-                    <div class="status-filter-element"><input type="submit" class="status-filter-element" value="<%= filterTasks %>"></div>
+                    <div class="status-filter-element"><input type="button" onclick="updateTasksAsync()" class="status-filter-element" value="<%= filterTasks %>"></div>
                 </form>
                 <table class="task-list" id="task-list">
 
