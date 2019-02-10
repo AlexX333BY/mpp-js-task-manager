@@ -44,6 +44,10 @@ router.get('/tasks', function (req, res) {
     res.send(JSON.stringify(sendingTasks));
 });
 
+router.get('/downloadTaskAttachment', function (req, res) {
+    res.download(tasks[parseInt(req.query['taskId'])].attachmentFileName);
+});
+
 router.get('/favicon.ico', (req, res) => res.status(204).end());
 
 router.post('/addTask', function (req, res) {
