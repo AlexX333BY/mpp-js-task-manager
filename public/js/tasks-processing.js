@@ -11,14 +11,54 @@ function updateTasksAsync() {
         }
     }
 
-    const xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("GET", '/tasks?' + filters.join('&'), true);
-    xmlHttp.onload = function() {
-        if (xmlHttp.status === 200) {
-            document.getElementById('task-list').innerHTML = JSON.parse(xmlHttp.responseText).join('');
+    const xmlHttpRequest = new XMLHttpRequest();
+    xmlHttpRequest.open("GET", '/tasks?' + filters.join('&'), true);
+    xmlHttpRequest.onload = function() {
+        if (xmlHttpRequest.status === 200) {
+            document.getElementById('task-list').innerHTML = JSON.parse(xmlHttpRequest.responseText).join('');
         } else {
-            alert('Error getting tasks, please try later');
+            alert(xmlHttpRequest.statusText);
         }
     };
-    xmlHttp.send(null);
+    xmlHttpRequest.send(null);
+}
+
+function addNewAndUpdateTasksAsync() {
+    const taskNameElement = document.getElementsByName('newTaskName')[0];
+    const completeDateElement = document.getElementsByName('newTaskExpectedCompleteDate')[0];
+
+    if (!isInputLegal(taskNameElement)) {
+        setInputLegality(taskNameElement, false);
+        return;
+    }
+
+    if (!isInputLegal(completeDateElement)) {
+        setInputLegality(completeDateElement, false);
+        return;
+    }
+
+    const xmlHttpRequest = new XMLHttpRequest();
+    xmlHttpRequest.open("POST", '/addTask', true);
+    xmlHttpRequest.onload = function() {
+        if (xmlHttpRequest.status === 200) {
+            updateTasksAsync();
+        } else {
+            alert(xmlHttpRequest.statusText);
+        }
+    };
+    xmlHttpRequest.send(new FormData(document.getElementById('new-task-form')));
+}
+
+function isInputLegal(inputElement) {
+    return inputElement.value.toString().length > 0;
+}
+
+function setInputLegality(inputElement, isLegal) {
+    const illegalInputClass = 'illegal-input';
+
+    if (isLegal) {
+        inputElement.classList.remove(illegalInputClass);
+    } else {
+        inputElement.classList.add(illegalInputClass);
+    }
 }

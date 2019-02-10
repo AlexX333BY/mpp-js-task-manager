@@ -46,6 +46,27 @@ router.get('/tasks', function (req, res) {
 
 router.get('/favicon.ico', (req, res) => res.status(204).end());
 
+router.post('/addTask', function (req, res) {
+    let attachmentFileName = null;
+    const attachment = req.files['newTaskAttachment'],
+        newTaskId = tasks.length;
+
+    if (attachment !== undefined) {
+        const attachmentPath = attachmentsDirectory + newTaskId + path.sep;
+        if (!fs.existsSync(attachmentPath)){
+            fs.mkdirSync(attachmentPath);
+        }
+
+        attachmentFileName = attachmentPath + attachment.name;
+        attachment.mv(attachmentFileName);
+    }
+
+    tasks[newTaskId] = new Task(req.body['newTaskName'], new Date(req.body['newTaskExpectedCompleteDate']),
+        attachmentFileName);
+    updateStorage();
+    res.end();
+});
+
 router.post('/', function (req, res) {
     if (req.body['taskId'] === undefined) {
         addTask(req, res);
@@ -61,22 +82,7 @@ function completeTask(req, res) {
 }
 
 function addTask(req, res) {
-    let attachmentFileName = null;
-    const attachment = req.files['taskAttachment'],
-        newTaskId = tasks.length;
 
-    if (attachment !== undefined) {
-        const attachmentPath = attachmentsDirectory + newTaskId + path.sep;
-        if (!fs.existsSync(attachmentPath)){
-            fs.mkdirSync(attachmentPath);
-        }
-
-        attachmentFileName = attachmentPath + attachment.name;
-        attachment.mv(attachmentFileName);
-    }
-
-    tasks[newTaskId] = new Task(req.body['taskName'], new Date(req.body['expectedCompleteDate']), attachmentFileName);
-    renderIndex(req, res);
 }
 
 function isObjectEmpty(obj) {
