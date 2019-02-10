@@ -49,6 +49,22 @@ function addNewAndUpdateTasksAsync() {
     xmlHttpRequest.send(new FormData(document.getElementById('new-task-form')));
 }
 
+function completeTaskAndUpdateTasksAsync(taskId) {
+    const data = new FormData();
+    data.append('taskId', taskId);
+
+    const xmlHttpRequest = new XMLHttpRequest();
+    xmlHttpRequest.open("POST", '/completeTask', true);
+    xmlHttpRequest.onload = function() {
+        if (xmlHttpRequest.status === 200) {
+            updateTasksAsync();
+        } else {
+            alert(xmlHttpRequest.statusText);
+        }
+    };
+    xmlHttpRequest.send(data);
+}
+
 function isInputLegal(inputElement) {
     return inputElement.value.toString().length > 0;
 }

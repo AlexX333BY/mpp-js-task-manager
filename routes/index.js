@@ -67,23 +67,11 @@ router.post('/addTask', function (req, res) {
     res.end();
 });
 
-router.post('/', function (req, res) {
-    if (req.body['taskId'] === undefined) {
-        addTask(req, res);
-    } else {
-        completeTask(req, res);
-    }
-    updateStorage();
-});
-
-function completeTask(req, res) {
+router.post('/completeTask', function (req, res) {
     tasks[parseInt(req.body['taskId'])].complete();
-    renderIndex(req, res);
-}
-
-function addTask(req, res) {
-
-}
+    updateStorage();
+    res.end();
+});
 
 function isObjectEmpty(obj) {
     return (Object.entries(obj).length === 0) && (obj.constructor === Object);
