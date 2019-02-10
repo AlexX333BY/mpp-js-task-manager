@@ -35,10 +35,8 @@ router.get('/tasks', function (req, res) {
             filters.push(statuses);
         }
 
-        let filteredTasks = tasks.filter((task) => filters.includes(task.isCompleted().toString()));
-        for (let index = 0; index < filteredTasks.length; ++index) {
-            sendingTasks.push(createTaskEntry(filteredTasks[index], index))
-        }
+        tasks.filter((task) => filters.includes(task.isCompleted().toString()))
+            .forEach((task) => sendingTasks.push(createTaskEntry(task)));
     }
 
     res.send(JSON.stringify(sendingTasks));
@@ -65,8 +63,8 @@ router.post('/addTask', function (req, res) {
         attachment.mv(attachmentFileName);
     }
 
-    tasks[newTaskId] = new Task(req.body['newTaskName'], new Date(req.body['newTaskExpectedCompleteDate']),
-        attachmentFileName);
+    tasks.push(new Task(req.body['newTaskName'], new Date(req.body['newTaskExpectedCompleteDate']),
+        tasks.length, attachmentFileName));
     updateStorage();
     res.end();
 });
@@ -81,8 +79,8 @@ function isObjectEmpty(obj) {
     return (Object.entries(obj).length === 0) && (obj.constructor === Object);
 }
 
-function createTaskEntry(task, taskId) {
-    const taskEntry = { taskId: taskId, taskName: task.name, taskAttachment: task.attachmentFileName,
+function createTaskEntry(task) {
+    const taskEntry = { taskId: task.id, taskName: task.name, taskAttachment: task.attachmentFileName,
         downloadAttachment: localization.downloadAttachment, completeTask: localization.completeTaskButton };
 
     taskEntry.expectedCompleteDate = task.completeDate.getDate() + '.' + (task.completeDate.getMonth() + 1) + '.'
