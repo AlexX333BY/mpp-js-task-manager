@@ -9,8 +9,6 @@
         </form>
     </td>
     <td class="task-spec">
-        <form method="post" >
-            <input type="button" value="<%= completeTask %>" <%= completeTaskDisabled %> onclick="completeTaskAndUpdateTasksAsync(<%= taskId %>)"/>
-        </form>
+        <input type="button" value="<%= completeTask %>" <%= completeTaskDisabled %> onclick="completeTaskAndUpdateTasksAsync(<%= taskId %>)"/>
     </td>
 </tr>
