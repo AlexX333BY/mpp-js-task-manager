@@ -12,14 +12,19 @@ const localization = { title: 'Task Manager', greeting: 'Welcome to Task Manager
     completeTaskButton: 'Complete', downloadAttachment: 'Download attachment',
     completedStatus: 'Completed', nonCompletedStatus: 'Not completed' };
 
-router.get('/', renderIndex);
+router.get('/', function (req, res) {
+    res.render('index', { title: localization.title, greeting: localization.greeting,
+        taskName: localization.taskNameQuery, taskAttachment: localization.taskAttachmentQuery,
+        taskCompleteDate: localization.taskCompleteDateQuery, submitNewTask: localization.submitTaskButton,
+        nonCompletedTasks: localization.nonCompletedTasks, completedTasks: localization.completedTasks,
+        filterTasks: localization.filterTasks, taskListHeader: localization.taskListHeader,
+        addTaskHeader: localization.addTaskHeader });
+});
 
 router.get('/tasks', function (req, res) {
     const sendingTasks = [];
 
-    if (isObjectEmpty(req.query)) {
-        tasks.forEach((value, index) => sendingTasks.push(createTaskEntry(value, index)));
-    } else {
+    if (!isObjectEmpty(req.query)) {
         const statuses = req.query['isCompleted'];
         let filters;
 
@@ -49,15 +54,6 @@ router.post('/', function (req, res) {
     }
     updateStorage();
 });
-
-function renderIndex(req, res) {
-    res.render('index', { title: localization.title, greeting: localization.greeting,
-        taskName: localization.taskNameQuery, taskAttachment: localization.taskAttachmentQuery,
-        taskCompleteDate: localization.taskCompleteDateQuery, submitNewTask: localization.submitTaskButton,
-        nonCompletedTasks: localization.nonCompletedTasks, completedTasks: localization.completedTasks,
-        filterTasks: localization.filterTasks, taskListHeader: localization.taskListHeader,
-        addTaskHeader: localization.addTaskHeader });
-}
 
 function completeTask(req, res) {
     tasks[parseInt(req.body['taskId'])].complete();

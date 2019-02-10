@@ -12,8 +12,8 @@
                 <h2><%= taskListHeader %></h2>
                 <form method="get" class="status-filter">
                     <div class="status-filter-entries">
-                        <div class="status-filter-element"><input type="checkbox" checked name="isCompleted" value="false"><%= nonCompletedTasks %></div>
-                        <div class="status-filter-element"><input type="checkbox" checked name="isCompleted" value="true"><%= completedTasks %></div>
+                        <div class="status-filter-element"><input type="checkbox" checked name="isCompletedFilter" value="false"><%= nonCompletedTasks %></div>
+                        <div class="status-filter-element"><input type="checkbox" checked name="isCompletedFilter" value="true"><%= completedTasks %></div>
                     </div>
                     <div class="status-filter-element"><input type="button" onclick="updateTasksAsync()" class="status-filter-element" value="<%= filterTasks %>"></div>
                 </form>
