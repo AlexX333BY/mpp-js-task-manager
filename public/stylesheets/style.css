@@ -75,3 +75,8 @@ tr.task-entry:hover, tr.expired-task-entry:hover {
 tr.expired-task-entry {
     color: red;
 }
+
+input.illegal-input {
+    border-style: solid;
+    border-color: red;
+}

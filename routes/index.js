@@ -1,33 +1,28 @@
 const path = require('path');
 const fs = require('fs');
 const express = require('express');
+const ejs = require('ejs');
 const router = express.Router();
-const Task = require('..' + path.sep + 'task');
+const Task = require('..' + path.sep + path.join('scripts', 'task'));
 
 const localization = { title: 'Task Manager', greeting: 'Welcome to Task Manager!', taskNameQuery: 'Name',
     taskAttachmentQuery: 'Attachment', taskCompleteDateQuery: 'Completion date',
     submitTaskButton: 'Submit task', nonCompletedTasks: 'Non-completed tasks', completedTasks: 'Completed tasks',
-    filterTasks: 'Filter tasks', taskListHeader: 'Tasks', addTaskHeader: 'Add new task',
-    completeTaskButton: 'Complete', downloadAttachment: 'Download attachment',
-    completedStatus: 'Completed', nonCompletedStatus: 'Not completed' };
+    taskListHeader: 'Tasks', addTaskHeader: 'Add new task', completeTaskButton: 'Complete',
+    downloadAttachment: 'Download attachment', completedStatus: 'Completed', nonCompletedStatus: 'Not completed' };
 
-router.get('/', renderIndex);
-
-router.post('/', function (req, res) {
-    if (req.body['taskId'] === undefined) {
-        addTask(req, res);
-    } else {
-        completeTask(req, res);
-    }
-    updateStorage();
+router.get('/', function (req, res) {
+    res.render('index', { title: localization.title, greeting: localization.greeting,
+        taskName: localization.taskNameQuery, taskAttachment: localization.taskAttachmentQuery,
+        taskCompleteDate: localization.taskCompleteDateQuery, submitNewTask: localization.submitTaskButton,
+        nonCompletedTasks: localization.nonCompletedTasks, completedTasks: localization.completedTasks,
+        taskListHeader: localization.taskListHeader, addTaskHeader: localization.addTaskHeader });
 });
 
-function renderIndex(req, res) {
-    const renderTasks = [];
+router.get('/tasks', function (req, res) {
+    const sendingTasks = [];
 
-    if (isObjectEmpty(req.query)) {
-        tasks.forEach((value, index) => renderTasks.push(createTaskEntry(value, index)));
-    } else {
+    if (!isObjectEmpty(req.query)) {
         const statuses = req.query['isCompleted'];
         let filters;
 
@@ -38,28 +33,22 @@ function renderIndex(req, res) {
             filters.push(statuses);
         }
 
-        let filteredTasks = tasks.filter((task) => filters.includes(task.isCompleted().toString()));
-        for (let index = 0; index < filteredTasks.length; ++index) {
-            renderTasks.push(createTaskEntry(filteredTasks[index], index))
-        }
+        tasks.filter((task) => filters.includes(task.isCompleted().toString()))
+            .forEach((task) => sendingTasks.push(createTaskEntry(task)));
     }
 
-    res.render('index', { tasks: renderTasks, title: localization.title, greeting: localization.greeting,
-        taskName: localization.taskNameQuery, taskAttachment: localization.taskAttachmentQuery,
-        taskCompleteDate: localization.taskCompleteDateQuery, submitNewTask: localization.submitTaskButton,
-        nonCompletedTasks: localization.nonCompletedTasks, completedTasks: localization.completedTasks,
-        filterTasks: localization.filterTasks, taskListHeader: localization.taskListHeader,
-        addTaskHeader: localization.addTaskHeader });
-}
+    res.send(JSON.stringify(sendingTasks));
+});
 
-function completeTask(req, res) {
-    tasks[parseInt(req.body['taskId'])].complete();
-    renderIndex(req, res);
-}
+router.get('/downloadTaskAttachment', function (req, res) {
+    res.download(tasks[parseInt(req.query['taskId'])].attachmentFileName);
+});
 
-function addTask(req, res) {
+router.get('/favicon.ico', (req, res) => res.status(204).end());
+
+router.post('/addTask', function (req, res) {
     let attachmentFileName = null;
-    const attachment = req.files['taskAttachment'],
+    const attachment = req.files['newTaskAttachment'],
         newTaskId = tasks.length;
 
     if (attachment !== undefined) {
@@ -72,16 +61,24 @@ function addTask(req, res) {
         attachment.mv(attachmentFileName);
     }
 
-    tasks[newTaskId] = new Task(req.body['taskName'], new Date(req.body['expectedCompleteDate']), attachmentFileName);
-    renderIndex(req, res);
-}
+    tasks.push(new Task(req.body['newTaskName'], new Date(req.body['newTaskExpectedCompleteDate']),
+        tasks.length, attachmentFileName));
+    updateStorage();
+    res.end();
+});
+
+router.post('/completeTask', function (req, res) {
+    tasks[parseInt(req.body['taskId'])].complete();
+    updateStorage();
+    res.end();
+});
 
 function isObjectEmpty(obj) {
     return (Object.entries(obj).length === 0) && (obj.constructor === Object);
 }
 
-function createTaskEntry(task, taskId) {
-    const taskEntry = { taskId: taskId, taskName: task.name, taskAttachment: task.attachmentFileName,
+function createTaskEntry(task) {
+    const taskEntry = { taskId: task.id, taskName: task.name, taskAttachment: task.attachmentFileName,
         downloadAttachment: localization.downloadAttachment, completeTask: localization.completeTaskButton };
 
     taskEntry.expectedCompleteDate = task.completeDate.getDate() + '.' + (task.completeDate.getMonth() + 1) + '.'
@@ -107,7 +104,7 @@ function createTaskEntry(task, taskId) {
         taskEntry.taskEntryClass = 'task-entry';
     }
 
-    return taskEntry;
+    return ejs.render(fs.readFileSync(path.join('views', 'task.ejs')).toString(), taskEntry);
 }
 
 module.exports = router;
