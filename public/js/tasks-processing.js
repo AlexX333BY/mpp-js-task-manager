@@ -174,7 +174,7 @@ function addNewAndUpdateTasksAsync() {
 
 function completeTaskAndUpdateTasksAsync(taskId) {
     let data = new FormData();
-    data.append('taskId', String(taskId));
+    data.append('taskId', taskId);
 
     const xmlHttpRequest = new XMLHttpRequest();
     xmlHttpRequest.open("POST", '/completeTask', true);

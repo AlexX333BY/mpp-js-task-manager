@@ -19,7 +19,7 @@ class User {
 
     static transformToUser(obj) {
         if (obj.hasOwnProperty('username') && obj.hasOwnProperty('passwordHash')) {
-            const user = new User(obj.username);
+            const user = new User(obj.username, obj.id);
 
             user.passwordHash = obj.passwordHash;
             return user;

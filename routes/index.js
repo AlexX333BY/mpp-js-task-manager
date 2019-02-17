@@ -120,7 +120,7 @@ router.get('/downloadTaskAttachment', function (req, res) {
 
 router.post('/completeTask', function (req, res) {
     const userId = decodeUserFromToken(getTokenFromRequest(req)).id,
-        task = tasks[parseInt(req.query['taskId'])];
+        task = tasks[parseInt(req.body['taskId'])];
     if (task.authorId == userId) {
         task.complete();
         updateTasksStorage();

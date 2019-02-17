@@ -21,12 +21,12 @@ class Task {
     static transformToTask(obj) {
         if (!obj.hasOwnProperty('name') || !obj.hasOwnProperty('completeDate')
             || !obj.hasOwnProperty('completed') || !obj.hasOwnProperty('attachmentFileName')
-            || isNaN(Date.parse(obj.completeDate))
+            || isNaN(Date.parse(obj.completeDate)) || !obj.hasOwnProperty('id') || !obj.hasOwnProperty('authorId')
             || ((obj.attachmentFileName !== null) && !fs.existsSync(obj.attachmentFileName))
             || !obj.hasOwnProperty('id') || isNaN(obj.id)) {
             return null;
         } else {
-            const task = new Task(obj.name, new Date(obj.completeDate), obj.id, obj.attachmentFileName);
+            const task = new Task(obj.name, new Date(obj.completeDate), obj.id, obj.authorId, obj.attachmentFileName);
 
             task.completed = obj.completed;
             return task;
