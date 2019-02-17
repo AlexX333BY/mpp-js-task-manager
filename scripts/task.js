@@ -13,10 +13,6 @@ class Task {
         return this.completed;
     }
 
-    isExpired() {
-        return (!this.isCompleted() && (this.completeDate < new Date()));
-    }
-
     complete() {
         this.completed = true;
     }

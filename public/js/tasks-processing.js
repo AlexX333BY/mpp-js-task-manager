@@ -15,7 +15,65 @@ function updateTasksAsync() {
     xmlHttpRequest.open("GET", '/tasks?' + filters.join('&'), true);
     xmlHttpRequest.onload = function() {
         if (xmlHttpRequest.status === 200) {
-            document.getElementById('task-list').innerHTML = JSON.parse(xmlHttpRequest.responseText).join('');
+            const response = JSON.parse(xmlHttpRequest.response);
+            document.getElementById('task-list').innerHTML = response.tasks.map(function (task) {
+                task.completeDate = new Date(task.completeDate);
+                return createTaskEntry(task, response.template, response.loc);
+            }).join('');
+        } else {
+            alert(xmlHttpRequest.statusText);
+        }
+    };
+    xmlHttpRequest.send(null);
+}
+
+function createTaskEntry(task, template, loc) {
+    const taskEntry = { taskId: task.id, taskName: task.name, taskAttachment: task.attachmentFileName,
+        downloadAttachment: loc.downloadAttachment, completeTask: loc.completeTaskButton };
+
+    taskEntry.expectedCompleteDate = task.completeDate.getDate() + '.' + (task.completeDate.getMonth() + 1) + '.'
+        + task.completeDate.getFullYear();
+
+    if (isTaskCompleted(task)) {
+        taskEntry.taskStatus = loc.completedStatus;
+        taskEntry.completeTaskDisabled = 'disabled';
+    } else {
+        taskEntry.taskStatus = loc.nonCompletedStatus;
+        taskEntry.completeTaskDisabled = '';
+    }
+
+    if (task.attachmentFileName == null) {
+        taskEntry.downloadAttachmentDisabled = 'disabled';
+    } else {
+        taskEntry.downloadAttachmentDisabled = '';
+    }
+
+    if (isTaskExpired(task)) {
+        taskEntry.taskEntryClass = 'expired-task-entry';
+    } else {
+        taskEntry.taskEntryClass = 'task-entry';
+    }
+
+    return ejs.render(template, taskEntry);
+}
+
+function isTaskCompleted(task) {
+    return task.completed;
+}
+
+function isTaskExpired(task) {
+    return (!isTaskCompleted(task) && (task.completeDate < new Date()));
+}
+
+function onPageLoad() {
+    const xmlHttpRequest = new XMLHttpRequest();
+    xmlHttpRequest.open("GET", '/index', true);
+    xmlHttpRequest.onload = function() {
+        if (xmlHttpRequest.status === 200) {
+            const response = JSON.parse(xmlHttpRequest.response);
+            document.title = response.loc.title;
+            document.getElementsByTagName('body')[0].innerHTML = ejs.render(response.template, response.loc);
+            updateTasksAsync();
         } else {
             alert(xmlHttpRequest.statusText);
         }

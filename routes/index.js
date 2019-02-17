@@ -1,26 +1,23 @@
 const path = require('path');
 const fs = require('fs');
 const express = require('express');
-const ejs = require('ejs');
 const router = express.Router();
 const Task = require('..' + path.sep + path.join('scripts', 'task'));
 
-const localization = { title: 'Task Manager', greeting: 'Welcome to Task Manager!', taskNameQuery: 'Name',
-    taskAttachmentQuery: 'Attachment', taskCompleteDateQuery: 'Completion date',
-    submitTaskButton: 'Submit task', nonCompletedTasks: 'Non-completed tasks', completedTasks: 'Completed tasks',
-    taskListHeader: 'Tasks', addTaskHeader: 'Add new task', completeTaskButton: 'Complete',
-    downloadAttachment: 'Download attachment', completedStatus: 'Completed', nonCompletedStatus: 'Not completed' };
+const pageLocalization = { title: 'Task Manager', greeting: 'Welcome to Task Manager!', taskNameQuery: 'Name',
+        taskAttachmentQuery: 'Attachment', taskCompleteDateQuery: 'Completion date',
+        submitTaskButton: 'Submit task', nonCompletedTasks: 'Non-completed tasks', completedTasks: 'Completed tasks',
+        taskListHeader: 'Tasks', addTaskHeader: 'Add new task' },
+    taskLocalization  = { completeTaskButton: 'Complete', downloadAttachment: 'Download attachment',
+        completedStatus: 'Completed', nonCompletedStatus: 'Not completed' };
 
-router.get('/', function (req, res) {
-    res.render('index', { title: localization.title, greeting: localization.greeting,
-        taskName: localization.taskNameQuery, taskAttachment: localization.taskAttachmentQuery,
-        taskCompleteDate: localization.taskCompleteDateQuery, submitNewTask: localization.submitTaskButton,
-        nonCompletedTasks: localization.nonCompletedTasks, completedTasks: localization.completedTasks,
-        taskListHeader: localization.taskListHeader, addTaskHeader: localization.addTaskHeader });
-});
+router.get('/', (req, res) => res.send(fs.readFileSync(path.join('views', 'page.ejs')).toString()));
+
+router.get('/index', (req, res) => res.send(JSON.stringify({ template: fs.readFileSync(path.join('views', 'index.ejs')).toString(),
+    loc: pageLocalization })));
 
 router.get('/tasks', function (req, res) {
-    const sendingTasks = [];
+    let sendingTasks = [];
 
     if (!isObjectEmpty(req.query)) {
         const statuses = req.query['isCompleted'];
@@ -33,16 +30,14 @@ router.get('/tasks', function (req, res) {
             filters.push(statuses);
         }
 
-        tasks.filter((task) => filters.includes(task.isCompleted().toString()))
-            .forEach((task) => sendingTasks.push(createTaskEntry(task)));
+        sendingTasks = tasks.filter((task) => filters.includes(task.isCompleted().toString()));
     }
 
-    res.send(JSON.stringify(sendingTasks));
+    res.send(JSON.stringify({ tasks: sendingTasks,
+        template: fs.readFileSync(path.join('views', 'task.ejs')).toString(), loc: taskLocalization }));
 });
 
-router.get('/downloadTaskAttachment', function (req, res) {
-    res.download(tasks[parseInt(req.query['taskId'])].attachmentFileName);
-});
+router.get('/downloadTaskAttachment', (req, res) => res.download(tasks[parseInt(req.query['taskId'])].attachmentFileName));
 
 router.get('/favicon.ico', (req, res) => res.status(204).end());
 
@@ -77,34 +72,5 @@ function isObjectEmpty(obj) {
     return (Object.entries(obj).length === 0) && (obj.constructor === Object);
 }
 
-function createTaskEntry(task) {
-    const taskEntry = { taskId: task.id, taskName: task.name, taskAttachment: task.attachmentFileName,
-        downloadAttachment: localization.downloadAttachment, completeTask: localization.completeTaskButton };
-
-    taskEntry.expectedCompleteDate = task.completeDate.getDate() + '.' + (task.completeDate.getMonth() + 1) + '.'
-        + task.completeDate.getFullYear();
-
-    if (task.isCompleted()) {
-        taskEntry.taskStatus = localization.completedStatus;
-        taskEntry.completeTaskDisabled = 'disabled';
-    } else {
-        taskEntry.taskStatus = localization.nonCompletedStatus;
-        taskEntry.completeTaskDisabled = '';
-    }
-
-    if (task.attachmentFileName == null) {
-        taskEntry.downloadAttachmentDisabled = 'disabled';
-    } else {
-        taskEntry.downloadAttachmentDisabled = '';
-    }
-
-    if (task.isExpired()) {
-        taskEntry.taskEntryClass = 'expired-task-entry';
-    } else {
-        taskEntry.taskEntryClass = 'task-entry';
-    }
-
-    return ejs.render(fs.readFileSync(path.join('views', 'task.ejs')).toString(), taskEntry);
-}
 
 module.exports = router;

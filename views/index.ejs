@@ -1,46 +1,36 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title><%= title %></title>
-        <link rel='stylesheet' href='/stylesheets/style.css' />
-    </head>
-    <body class="index" onload="updateTasksAsync()">
-        <script src="js/tasks-processing.js"></script>
-        <h1><%= greeting %></h1>
-        <div class="tasks-block">
-            <div class="task-list">
-                <h2><%= taskListHeader %></h2>
-                <div class="status-filter-entries">
-                    <div class="status-filter-element"><input type="checkbox" checked name="isCompletedFilter" value="false" onclick="updateTasksAsync()"><%= nonCompletedTasks %></div>
-                    <div class="status-filter-element"><input type="checkbox" checked name="isCompletedFilter" value="true" onclick="updateTasksAsync()"><%= completedTasks %></div>
-                </div>
-                <table class="task-list" id="task-list">
-
-                </table>
-            </div>
-            <div class="add-task-query">
-                <h2><%= addTaskHeader %></h2>
-                <form class="add-task-query" encType="multipart/form-data" id="new-task-form">
-                    <table class="add-task-query">
-                        <tr>
-                            <td class="task-input-description"><%= taskName %></td>
-                            <td class="task-input-field"><input type="text" id="a" name="newTaskName" onclick="setInputLegality(this, true)"></td>
-                        </tr>
-                        <tr>
-                            <td class="task-input-description"><%= taskAttachment %></td>
-                            <td class="task-input-field"><input type="file" name="newTaskAttachment"></td>
-                        </tr>
-                        <tr>
-                            <td class="task-input-description"><%= taskCompleteDate %></td>
-                            <td class="task-input-field"><input type="date" name="newTaskExpectedCompleteDate" onclick="setInputLegality(this, true)"></td>
-                        </tr>
-                        <tr>
-                            <td class="task-input-description"></td>
-                            <td class="task-input-field"><input type="button" value="<%= submitNewTask %>" onclick="addNewAndUpdateTasksAsync()"></td>
-                        </tr>
-                    </table>
-                </form>
-            </div>
+<h1><%= greeting %></h1>
+<div class="tasks-block">
+    <div class="task-list">
+        <h2><%= taskListHeader %></h2>
+        <div class="status-filter-entries">
+            <div class="status-filter-element"><input type="checkbox" checked name="isCompletedFilter" value="false" onclick="updateTasksAsync()"><%= nonCompletedTasks %></div>
+            <div class="status-filter-element"><input type="checkbox" checked name="isCompletedFilter" value="true" onclick="updateTasksAsync()"><%= completedTasks %></div>
         </div>
-    </body>
-</html>
+        <table class="task-list" id="task-list">
+
+        </table>
+    </div>
+    <div class="add-task-query">
+        <h2><%= addTaskHeader %></h2>
+        <form class="add-task-query" encType="multipart/form-data" id="new-task-form">
+            <table class="add-task-query">
+                <tr>
+                    <td class="task-input-description"><%= taskNameQuery %></td>
+                    <td class="task-input-field"><input type="text" id="a" name="newTaskName" onclick="setInputLegality(this, true)"></td>
+                </tr>
+                <tr>
+                    <td class="task-input-description"><%= taskAttachmentQuery %></td>
+                    <td class="task-input-field"><input type="file" name="newTaskAttachment"></td>
+                </tr>
+                <tr>
+                    <td class="task-input-description"><%= taskCompleteDateQuery %></td>
+                    <td class="task-input-field"><input type="date" name="newTaskExpectedCompleteDate" onclick="setInputLegality(this, true)"></td>
+                </tr>
+                <tr>
+                    <td class="task-input-description"></td>
+                    <td class="task-input-field"><input type="button" value="<%= submitTaskButton %>" onclick="addNewAndUpdateTasksAsync()"></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
