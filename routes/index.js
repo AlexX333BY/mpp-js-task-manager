@@ -17,7 +17,10 @@ const commonLocalization = { title: 'Task Manager', greeting: 'Welcome to Task M
 
 router.get('/', (req, res) => res.send(fs.readFileSync(path.join('views', 'page.ejs')).toString()));
 
-router.get('/index', (req, res) => res.send(JSON.stringify({ template: fs.readFileSync(path.join('views', 'login.ejs')).toString(),
+router.get('/index', (req, res) => res.send(JSON.stringify({ template: fs.readFileSync(path.join('views', 'index.ejs')).toString(),
+    loc: pageLocalization })));
+
+router.get('/login', (req, res) => res.send(JSON.stringify({ template: fs.readFileSync(path.join('views', 'login.ejs')).toString(),
     loc: loginLocalization })));
 
 router.get('/tasks', function (req, res) {
@@ -62,13 +65,13 @@ router.post('/addTask', function (req, res) {
 
     tasks.push(new Task(req.body['newTaskName'], new Date(req.body['newTaskExpectedCompleteDate']),
         tasks.length, attachmentFileName));
-    updateStorage();
+    updateTasksStorage();
     res.end();
 });
 
 router.post('/completeTask', function (req, res) {
     tasks[parseInt(req.body['taskId'])].complete();
-    updateStorage();
+    updateTasksStorage();
     res.end();
 });
 

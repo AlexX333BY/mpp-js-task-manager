@@ -5,6 +5,7 @@ const express = require('express');
 const logger = require('morgan');
 const fileUpload = require('express-fileupload');
 const taskSerializer = require('.' + path.sep + path.join('scripts', 'task-serializer'));
+const userSerializer = require('.' + path.sep + path.join('scripts', 'user-serializer'));
 
 const indexRouter = require('.' + path.sep + path.join('routes', 'index'));
 
@@ -14,9 +15,14 @@ function initStorage() {
     global.tasksDirectory = '.' + path.sep + 'tasks' + path.sep;
     global.tasksPath = path.join(tasksDirectory, 'tasks.dat');
     global.attachmentsDirectory = path.join(tasksDirectory, 'attachments') + path.sep;
+    global.usersPath = '.' + path.sep + path.join('users', 'users.dat');
 
-    global.updateStorage = function() {
+    global.updateTasksStorage = function() {
         fs.writeFileSync(tasksPath, taskSerializer.serializeTaskArray(tasks));
+    };
+
+    global.updateUsersStorage = function () {
+        fs.writeFileSync(usersPath, userSerializer.serializeUserArray(users));
     };
 
     if (!fs.existsSync(tasksDirectory)) {
@@ -33,7 +39,18 @@ function initStorage() {
         global.tasks = [];
     }
 
-    updateStorage();
+    if (!fs.existsSync(path.dirname(usersPath))) {
+        fs.mkdirSync(path.dirname(usersPath));
+    }
+
+    if (fs.existsSync(usersPath)) {
+        global.users = userSerializer.deserializeUserArray(fs.readFileSync(usersPath));
+    } else {
+        global.users = [];
+    }
+
+    updateTasksStorage();
+    updateUsersStorage();
 }
 
 // view engine setup
