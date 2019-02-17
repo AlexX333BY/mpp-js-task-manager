@@ -62,7 +62,7 @@ function initStorage() {
         fs.writeFileSync(keyPath, privateKey);
     }
     global.cookieName = 'token';
-    global.tokenExpirationTime = 60 * 60;
+    global.tokenExpirationTime = 60 * 60 * 1000;
 }
 
 // view engine setup

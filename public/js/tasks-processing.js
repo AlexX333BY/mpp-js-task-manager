@@ -1,3 +1,73 @@
+function onIndexLoad() {
+    loadIndexAsync();
+}
+
+function loadIndexAsync() {
+    const xmlHttpRequest = new XMLHttpRequest();
+    xmlHttpRequest.open("GET", '/index', true);
+    xmlHttpRequest.onload = function() {
+        switch (xmlHttpRequest.status) {
+            case 401:
+                loadLoginAsync();
+                break;
+            case 200:
+                const response = JSON.parse(xmlHttpRequest.response);
+                document.title = response.loc.title;
+                document.getElementsByTagName('body')[0].innerHTML = ejs.render(response.template, response.loc);
+                updateTasksAsync();
+                break;
+            default:
+                alert(xmlHttpRequest.statusText);
+                break;
+        }
+    };
+    xmlHttpRequest.send(null);
+}
+
+function loadLoginAsync() {
+    const xmlHttpRequest = new XMLHttpRequest();
+    xmlHttpRequest.open("GET", '/login', true);
+    xmlHttpRequest.onload = function() {
+        if (xmlHttpRequest.status === 200) {
+            const response = JSON.parse(xmlHttpRequest.response);
+            document.title = response.loc.title;
+            document.getElementsByTagName('body')[0].innerHTML = ejs.render(response.template, response.loc);
+        } else {
+            alert(xmlHttpRequest.statusText);
+        }
+    };
+    xmlHttpRequest.send(null);
+}
+
+function onLoginQuery() {
+    const username = document.getElementsByName('username')[0];
+    const password = document.getElementsByName('password')[0];
+
+    if (!isInputLegal(username)) {
+        setInputLegality(username, false);
+        return;
+    }
+
+    if (!isInputLegal(password)) {
+        setInputLegality(password, false);
+        return;
+    }
+
+    const xmlHttpRequest = new XMLHttpRequest();
+    xmlHttpRequest.open("POST", '/login', true);
+    xmlHttpRequest.onload = function() {
+        switch (xmlHttpRequest.status) {
+            case 200:
+                loadIndexAsync();
+                break;
+            default:
+                alert(xmlHttpRequest.statusText);
+                break;
+        }
+    };
+    xmlHttpRequest.send(new FormData(document.getElementById('login-form')));
+}
+
 function updateTasksAsync() {
     const filterElements = document.getElementsByName('isCompletedFilter'),
         filters = [],
@@ -14,14 +84,19 @@ function updateTasksAsync() {
     const xmlHttpRequest = new XMLHttpRequest();
     xmlHttpRequest.open("GET", '/tasks?' + filters.join('&'), true);
     xmlHttpRequest.onload = function() {
-        if (xmlHttpRequest.status === 200) {
-            const response = JSON.parse(xmlHttpRequest.response);
-            document.getElementById('task-list').innerHTML = response.tasks.map(function (task) {
-                task.completeDate = new Date(task.completeDate);
-                return createTaskEntry(task, response.template, response.loc);
-            }).join('');
-        } else {
-            alert(xmlHttpRequest.statusText);
+        switch (xmlHttpRequest.status) {
+            case 401:
+                loadLoginAsync();
+                break;
+            case 200:
+                const response = JSON.parse(xmlHttpRequest.response);
+                document.getElementById('task-list').innerHTML = response.tasks.map(function (task) {
+                    task.completeDate = new Date(task.completeDate);
+                    return createTaskEntry(task, response.template, response.loc);
+                }).join('');
+                break;
+            default:
+                alert(xmlHttpRequest.statusText);
         }
     };
     xmlHttpRequest.send(null);
@@ -65,22 +140,6 @@ function isTaskExpired(task) {
     return (!isTaskCompleted(task) && (task.completeDate < new Date()));
 }
 
-function onPageLoad() {
-    const xmlHttpRequest = new XMLHttpRequest();
-    xmlHttpRequest.open("GET", '/index', true);
-    xmlHttpRequest.onload = function() {
-        if (xmlHttpRequest.status === 200) {
-            const response = JSON.parse(xmlHttpRequest.response);
-            document.title = response.loc.title;
-            document.getElementsByTagName('body')[0].innerHTML = ejs.render(response.template, response.loc);
-            updateTasksAsync();
-        } else {
-            alert(xmlHttpRequest.statusText);
-        }
-    };
-    xmlHttpRequest.send(null);
-}
-
 function addNewAndUpdateTasksAsync() {
     const taskNameElement = document.getElementsByName('newTaskName')[0];
     const completeDateElement = document.getElementsByName('newTaskExpectedCompleteDate')[0];
@@ -98,10 +157,16 @@ function addNewAndUpdateTasksAsync() {
     const xmlHttpRequest = new XMLHttpRequest();
     xmlHttpRequest.open("POST", '/addTask', true);
     xmlHttpRequest.onload = function() {
-        if (xmlHttpRequest.status === 200) {
-            updateTasksAsync();
-        } else {
-            alert(xmlHttpRequest.statusText);
+        switch (xmlHttpRequest.status) {
+            case 401:
+                loadLoginAsync();
+                break;
+            case 200:
+                updateTasksAsync();
+                break;
+            default:
+                alert(xmlHttpRequest.statusText);
+                break;
         }
     };
     xmlHttpRequest.send(new FormData(document.getElementById('new-task-form')));
@@ -114,10 +179,16 @@ function completeTaskAndUpdateTasksAsync(taskId) {
     const xmlHttpRequest = new XMLHttpRequest();
     xmlHttpRequest.open("POST", '/completeTask', true);
     xmlHttpRequest.onload = function() {
-        if (xmlHttpRequest.status === 200) {
-            updateTasksAsync();
-        } else {
-            alert(xmlHttpRequest.statusText);
+        switch (xmlHttpRequest.status) {
+            case 401:
+                loadLoginAsync();
+                break;
+            case 200:
+                updateTasksAsync();
+                break;
+            default:
+                alert(xmlHttpRequest.statusText);
+                break;
         }
     };
     xmlHttpRequest.send(data);

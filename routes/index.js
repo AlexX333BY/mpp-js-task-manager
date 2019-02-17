@@ -16,13 +16,29 @@ const commonLocalization = { title: 'Task Manager', greeting: 'Welcome to Task M
     loginLocalization = { title: commonLocalization.title, greeting: commonLocalization.greeting, loginHeader: 'Login',
         usernameQuery: 'Username', passwordQuery: 'Password', submitLoginButton: 'Login' };
 
+router.get('/favicon.ico', (req, res) => res.status(204).end());
+
 router.use(function (req, res, next) {
-    if (req.path.includes('login') || isTokenValid(req.cookies[cookieName])) {
+    if (req.url.includes('login') || (req.url === '/') || isTokenValid(req.cookies[cookieName])) {
         next();
     } else {
         res.status(401).end();
     }
 });
+
+function isTokenValid(token) {
+    try {
+        const decoded = jwt.verify(token, privateKey),
+            tokenUser = users.filter((user) => user.username === decoded.username);
+        if (tokenUser.length === 0) {
+            return false;
+        } else {
+            return tokenUser[0].passwordHash === decoded.passwordHash;
+        }
+    } catch(err) {
+        return false;
+    }
+}
 
 router.get('/', (req, res) => res.send(fs.readFileSync(path.join('views', 'page.ejs')).toString()));
 
@@ -40,18 +56,27 @@ router.post('/login', function (req, res) {
     if (suchUsers.length === 0) {
         const user = new User(username, users.length, password);
         users.push(user);
-        createCookie(user);
+        updateUsersStorage();
+        createCookie(res, user);
         res.status(200).end();
     } else {
         const user = suchUsers[0];
         if (user.checkPassword(password)) {
-            createCookie(user);
+            createCookie(res, user);
             res.status(200).end();
         } else {
             res.status(406).end();
         }
     }
 });
+
+function createCookie(res, user) {
+    res.cookie(cookieName, createToken(user), { httpOnly: true, maxAge: tokenExpirationTime });
+}
+
+function createToken(user) {
+    return jwt.sign(JSON.parse(JSON.stringify(user)), privateKey, { expiresIn: tokenExpirationTime });
+}
 
 router.get('/tasks', function (req, res) {
     let sendingTasks = [];
@@ -76,7 +101,11 @@ router.get('/tasks', function (req, res) {
 
 router.get('/downloadTaskAttachment', (req, res) => res.download(tasks[parseInt(req.query['taskId'])].attachmentFileName));
 
-router.get('/favicon.ico', (req, res) => res.status(204).end());
+router.post('/completeTask', function (req, res) {
+    tasks[parseInt(req.body['taskId'])].complete();
+    updateTasksStorage();
+    res.end();
+});
 
 router.post('/addTask', function (req, res) {
     let attachmentFileName = null;
@@ -99,36 +128,8 @@ router.post('/addTask', function (req, res) {
     res.end();
 });
 
-router.post('/completeTask', function (req, res) {
-    tasks[parseInt(req.body['taskId'])].complete();
-    updateTasksStorage();
-    res.end();
-});
-
 function isObjectEmpty(obj) {
     return (Object.entries(obj).length === 0) && (obj.constructor === Object);
-}
-
-function isTokenValid(token) {
-    try {
-        const decoded = jwt.verify(token, privateKey),
-            tokenUser = users.filter(decoded.username);
-        if (tokenUser.length === 0) {
-            return false;
-        } else {
-            return tokenUser.checkPassword(decoded.password);
-        }
-    } catch(err) {
-        return false;
-    }
-}
-
-function createCookie(res) {
-    res.cookie(cookieName, createToken(user), { httpOnly: true, maxAge: tokenExpirationTime });
-}
-
-function createToken(user) {
-    return jwt.sign(user, privateKey, { expiresIn: tokenExpirationTime });
 }
 
 module.exports = router;

@@ -1,7 +1,7 @@
 <h1><%= greeting %></h1>
 <div class="login-block">
     <h2><%= loginHeader %></h2>
-    <form class="login-query">
+    <form class="login-query" id="login-form">
         <table class="login-query">
             <tr>
                 <td class="login-input-description"><%= usernameQuery %></td>
@@ -13,7 +13,7 @@
             </tr>
             <tr>
                 <td class="login-input-description"></td>
-                <td class="login-input-field"><input type="button" value="<%= submitLoginButton %>"></td>
+                <td class="login-input-field"><input type="button" value="<%= submitLoginButton %>" onclick="onLoginQuery()"></td>
             </tr>
         </table>
     </form>
