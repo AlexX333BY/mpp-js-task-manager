@@ -4,12 +4,20 @@ body.index {
     font-family: sans-serif;
 }
 
-div.tasks-block {
+div.tasks-block, div.login-block {
     display: flex;
-    flex-direction: row;
     background-color: aquamarine;
     margin: 0 2em;
     border-radius: 2em;
+}
+
+div.tasks-block {
+    flex-direction: row;
+}
+
+div.login-block {
+    flex-direction: column;
+    padding: 1em;
 }
 
 div.task-list, div.add-task-query {
@@ -27,7 +35,7 @@ div.add-task-query {
     flex-grow: 1;
 }
 
-td.task-input-description, td.task-input-field, td.task-spec, div.status-filter-element {
+td.task-input-description, td.task-input-field, td.task-spec, div.status-filter-element, td.login-input-description, td.login-input-field {
     padding: 0.25em;
 }
 
@@ -54,7 +62,7 @@ div.status-filter-entries {
     justify-content: center;
 }
 
-form.add-task-query {
+form.add-task-query, form.login-query {
     display: flex;
     justify-content: center;
 }

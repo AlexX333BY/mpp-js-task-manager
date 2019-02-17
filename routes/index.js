@@ -4,17 +4,21 @@ const express = require('express');
 const router = express.Router();
 const Task = require('..' + path.sep + path.join('scripts', 'task'));
 
-const pageLocalization = { title: 'Task Manager', greeting: 'Welcome to Task Manager!', taskNameQuery: 'Name',
+const commonLocalization = { title: 'Task Manager', greeting: 'Welcome to Task Manager!' },
+    pageLocalization = { title: commonLocalization.title, greeting: commonLocalization.greeting, taskNameQuery: 'Name',
         taskAttachmentQuery: 'Attachment', taskCompleteDateQuery: 'Completion date',
         submitTaskButton: 'Submit task', nonCompletedTasks: 'Non-completed tasks', completedTasks: 'Completed tasks',
         taskListHeader: 'Tasks', addTaskHeader: 'Add new task' },
     taskLocalization  = { completeTaskButton: 'Complete', downloadAttachment: 'Download attachment',
-        completedStatus: 'Completed', nonCompletedStatus: 'Not completed' };
+        completedStatus: 'Completed', nonCompletedStatus: 'Not completed' },
+    loginLocalization = { title: commonLocalization.title, greeting: commonLocalization.greeting, loginHeader: 'Login',
+        usernameQuery: 'Username', passwordQuery: 'Password', submitLoginButton: 'Login' };
+
 
 router.get('/', (req, res) => res.send(fs.readFileSync(path.join('views', 'page.ejs')).toString()));
 
-router.get('/index', (req, res) => res.send(JSON.stringify({ template: fs.readFileSync(path.join('views', 'index.ejs')).toString(),
-    loc: pageLocalization })));
+router.get('/index', (req, res) => res.send(JSON.stringify({ template: fs.readFileSync(path.join('views', 'login.ejs')).toString(),
+    loc: loginLocalization })));
 
 router.get('/tasks', function (req, res) {
     let sendingTasks = [];
