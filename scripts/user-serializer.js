@@ -1,5 +1,5 @@
 let path = require('path');
-let User = require('.' + path.sep + 'User');
+let User = require('.' + path.sep + 'user');
 
 function serialize(userArray) {
     return JSON.stringify(userArray);

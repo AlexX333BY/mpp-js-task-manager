@@ -63,3 +63,4 @@ typings/
 .idea/
 tasks/
 users/
+private.key

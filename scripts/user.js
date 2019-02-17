@@ -1,8 +1,9 @@
 const crypto = require('crypto');
 
 class User {
-    constructor(username, password = null) {
+    constructor(username, id, password = null) {
         this.username = username;
+        this.id = id;
         if (password != null) {
             this.passwordHash = this.createPasswordHash(password);
         }

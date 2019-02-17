@@ -3,9 +3,11 @@ const fs = require('fs');
 const createError = require('http-errors');
 const express = require('express');
 const logger = require('morgan');
+const cookieParser = require('cookie-parser')
 const fileUpload = require('express-fileupload');
 const taskSerializer = require('.' + path.sep + path.join('scripts', 'task-serializer'));
 const userSerializer = require('.' + path.sep + path.join('scripts', 'user-serializer'));
+const secureRandom = require('secure-random');
 
 const indexRouter = require('.' + path.sep + path.join('routes', 'index'));
 
@@ -51,6 +53,16 @@ function initStorage() {
 
     updateTasksStorage();
     updateUsersStorage();
+
+    const keyPath = 'private.key';
+    if (fs.existsSync(keyPath)) {
+        global.privateKey = fs.readFileSync(keyPath);
+    } else {
+        global.privateKey = secureRandom(256, { type: 'Buffer' }).toString('hex');
+        fs.writeFileSync(keyPath, privateKey);
+    }
+    global.cookieName = 'token';
+    global.tokenExpirationTime = 60 * 60;
 }
 
 // view engine setup
@@ -59,6 +71,7 @@ app.set('view engine', 'ejs');
 
 app.use(fileUpload());
 app.use(logger('dev'));
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
