@@ -19,7 +19,7 @@ const commonLocalization = { title: 'Task Manager', greeting: 'Welcome to Task M
 router.get('/favicon.ico', (req, res) => res.status(204).end());
 
 router.use(function (req, res, next) {
-    if (req.url.includes('login') || (req.url === '/') || isTokenValid(req.cookies[cookieName])) {
+    if (req.url.includes('login') || (req.url === '/') || isTokenValid(getTokenFromRequest(req))) {
         next();
     } else {
         res.status(401).end();
@@ -28,7 +28,7 @@ router.use(function (req, res, next) {
 
 function isTokenValid(token) {
     try {
-        const decoded = jwt.verify(token, privateKey),
+        const decoded = decodeUserFromToken(token),
             tokenUser = users.filter((user) => user.username === decoded.username);
         if (tokenUser.length === 0) {
             return false;
@@ -38,6 +38,14 @@ function isTokenValid(token) {
     } catch(err) {
         return false;
     }
+}
+
+function decodeUserFromToken(token) {
+    return jwt.verify(token, privateKey);
+}
+
+function getTokenFromRequest(req) {
+    return req.cookies[cookieName];
 }
 
 router.get('/', (req, res) => res.send(fs.readFileSync(path.join('views', 'page.ejs')).toString()));
@@ -92,19 +100,34 @@ router.get('/tasks', function (req, res) {
             filters.push(statuses);
         }
 
-        sendingTasks = tasks.filter((task) => filters.includes(task.isCompleted().toString()));
+        const userId = decodeUserFromToken(getTokenFromRequest(req)).id;
+        sendingTasks = tasks.filter((task) => (task.authorId == userId) && filters.includes(task.isCompleted().toString()));
     }
 
     res.send(JSON.stringify({ tasks: sendingTasks,
         template: fs.readFileSync(path.join('views', 'task.ejs')).toString(), loc: taskLocalization }));
 });
 
-router.get('/downloadTaskAttachment', (req, res) => res.download(tasks[parseInt(req.query['taskId'])].attachmentFileName));
+router.get('/downloadTaskAttachment', function (req, res) {
+    const userId = decodeUserFromToken(getTokenFromRequest(req)).id,
+        task = tasks[parseInt(req.query['taskId'])];
+    if (task.authorId == userId) {
+        res.download(task.attachmentFileName);
+    } else {
+        res.status(403).end();
+    }
+});
 
 router.post('/completeTask', function (req, res) {
-    tasks[parseInt(req.body['taskId'])].complete();
-    updateTasksStorage();
-    res.end();
+    const userId = decodeUserFromToken(getTokenFromRequest(req)).id,
+        task = tasks[parseInt(req.query['taskId'])];
+    if (task.authorId == userId) {
+        task.complete();
+        updateTasksStorage();
+        res.end();
+    } else {
+        res.status(403).end();
+    }
 });
 
 router.post('/addTask', function (req, res) {
@@ -123,7 +146,7 @@ router.post('/addTask', function (req, res) {
     }
 
     tasks.push(new Task(req.body['newTaskName'], new Date(req.body['newTaskExpectedCompleteDate']),
-        tasks.length, attachmentFileName));
+        tasks.length, decodeUserFromToken(getTokenFromRequest(req)).id, attachmentFileName));
     updateTasksStorage();
     res.end();
 });

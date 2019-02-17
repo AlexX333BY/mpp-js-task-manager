@@ -1,12 +1,13 @@
 let fs = require('fs');
 
 class Task {
-    constructor(name, completeDate, id, attachmentFileName = null) {
+    constructor(name, completeDate, id, authorId, attachmentFileName = null) {
         this.attachmentFileName = attachmentFileName;
         this.completeDate = completeDate;
         this.name = name;
         this.completed = false;
         this.id = id;
+        this.authorId = authorId;
     }
 
     isCompleted() {
