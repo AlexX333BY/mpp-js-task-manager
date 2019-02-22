@@ -1,0 +1,20 @@
+<h1><%= greeting %></h1>
+<div class="login-block">
+    <h2><%= loginHeader %></h2>
+    <form class="login-query" id="login-form">
+        <table class="login-query">
+            <tr>
+                <td class="login-input-description"><%= usernameQuery %></td>
+                <td class="login-input-field"><input type="text" name="username" onclick="setInputLegality(this, true)"></td>
+            </tr>
+            <tr>
+                <td class="login-input-description"><%= passwordQuery %></td>
+                <td class="login-input-field"><input type="password" name="password" onclick="setInputLegality(this, true)"></td>
+            </tr>
+            <tr>
+                <td class="login-input-description"></td>
+                <td class="login-input-field"><input type="button" value="<%= submitLoginButton %>" onclick="onLoginQuery()"></td>
+            </tr>
+        </table>
+    </form>
+</div>
