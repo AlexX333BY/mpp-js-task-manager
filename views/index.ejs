@@ -3,8 +3,8 @@
     <div class="task-list">
         <h2><%= taskListHeader %></h2>
         <div class="status-filter-entries">
-            <div class="status-filter-element"><input type="checkbox" checked name="isCompletedFilter" value="false" onclick="updateTasksAsync()"><%= nonCompletedTasks %></div>
-            <div class="status-filter-element"><input type="checkbox" checked name="isCompletedFilter" value="true" onclick="updateTasksAsync()"><%= completedTasks %></div>
+            <div class="status-filter-element"><input type="checkbox" checked name="isCompletedFilter" value="false" onclick="updateTasks()"><%= nonCompletedTasks %></div>
+            <div class="status-filter-element"><input type="checkbox" checked name="isCompletedFilter" value="true" onclick="updateTasks()"><%= completedTasks %></div>
         </div>
         <table class="task-list" id="task-list">
 
@@ -28,7 +28,7 @@
                 </tr>
                 <tr>
                     <td class="task-input-description"></td>
-                    <td class="task-input-field"><input type="button" value="<%= submitTaskButton %>" onclick="addNewAndUpdateTasksAsync()"></td>
+                    <td class="task-input-field"><input type="button" value="<%= submitTaskButton %>" onclick="addNewAndUpdateTasks()"></td>
                 </tr>
             </table>
         </form>

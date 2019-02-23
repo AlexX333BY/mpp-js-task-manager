@@ -1,42 +1,32 @@
+const socket = io();
+
+socket.on('index-page', function (page) {
+    const response = JSON.parse(page);
+    document.title = response.loc.title;
+    document.getElementsByTagName('body')[0].innerHTML = ejs.render(response.template, response.loc);
+    updateTasks();
+});
+
+socket.on('login-page', function (page) {
+    const response = JSON.parse(page);
+    document.title = response.loc.title;
+    document.getElementsByTagName('body')[0].innerHTML = ejs.render(response.template, response.loc);
+});
+
+socket.on('tasks', function (tasks) {
+    const response = JSON.parse(tasks);
+    document.getElementById('task-list').innerHTML = response.tasks.map(function (task) {
+        task.completeDate = new Date(task.completeDate);
+        return createTaskEntry(task, response.template, response.loc);
+    }).join('');
+});
+
 function onIndexLoad() {
-    loadIndexAsync();
+    loadIndex();
 }
 
-function loadIndexAsync() {
-    const xmlHttpRequest = new XMLHttpRequest();
-    xmlHttpRequest.open("GET", '/index', true);
-    xmlHttpRequest.onload = function() {
-        switch (xmlHttpRequest.status) {
-            case 401:
-                loadLoginAsync();
-                break;
-            case 200:
-                const response = JSON.parse(xmlHttpRequest.response);
-                document.title = response.loc.title;
-                document.getElementsByTagName('body')[0].innerHTML = ejs.render(response.template, response.loc);
-                updateTasksAsync();
-                break;
-            default:
-                alert(xmlHttpRequest.statusText);
-                break;
-        }
-    };
-    xmlHttpRequest.send(null);
-}
-
-function loadLoginAsync() {
-    const xmlHttpRequest = new XMLHttpRequest();
-    xmlHttpRequest.open("GET", '/login', true);
-    xmlHttpRequest.onload = function() {
-        if (xmlHttpRequest.status === 200) {
-            const response = JSON.parse(xmlHttpRequest.response);
-            document.title = response.loc.title;
-            document.getElementsByTagName('body')[0].innerHTML = ejs.render(response.template, response.loc);
-        } else {
-            alert(xmlHttpRequest.statusText);
-        }
-    };
-    xmlHttpRequest.send(null);
+function loadIndex() {
+    socket.emit('index-page');
 }
 
 function onLoginQuery() {
@@ -53,53 +43,13 @@ function onLoginQuery() {
         return;
     }
 
-    const xmlHttpRequest = new XMLHttpRequest();
-    xmlHttpRequest.open("POST", '/login', true);
-    xmlHttpRequest.onload = function() {
-        switch (xmlHttpRequest.status) {
-            case 200:
-                loadIndexAsync();
-                break;
-            default:
-                alert(xmlHttpRequest.statusText);
-                break;
-        }
-    };
-    xmlHttpRequest.send(new FormData(document.getElementById('login-form')));
+    socket.emit('login', username.value, password.value)
 }
 
-function updateTasksAsync() {
-    const filterElements = document.getElementsByName('isCompletedFilter'),
-        filters = [],
-        statusRequestParameterName = 'isCompleted';
-
-    let filterElement;
-    for (let index = 0; index < filterElements.length; ++index) {
-        filterElement = filterElements[index];
-        if (filterElement.checked) {
-            filters.push(statusRequestParameterName + '=' + filterElement.value);
-        }
-    }
-
-    const xmlHttpRequest = new XMLHttpRequest();
-    xmlHttpRequest.open("GET", '/tasks?' + filters.join('&'), true);
-    xmlHttpRequest.onload = function() {
-        switch (xmlHttpRequest.status) {
-            case 401:
-                loadLoginAsync();
-                break;
-            case 200:
-                const response = JSON.parse(xmlHttpRequest.response);
-                document.getElementById('task-list').innerHTML = response.tasks.map(function (task) {
-                    task.completeDate = new Date(task.completeDate);
-                    return createTaskEntry(task, response.template, response.loc);
-                }).join('');
-                break;
-            default:
-                alert(xmlHttpRequest.statusText);
-        }
-    };
-    xmlHttpRequest.send(null);
+function updateTasks() {
+    const filters = document.getElementsByName('isCompletedFilter')
+        .filter((element) => element.checked).map((element) => element.value);
+    socket.emit('tasks', filters);
 }
 
 function createTaskEntry(task, template, loc) {
@@ -140,7 +90,7 @@ function isTaskExpired(task) {
     return (!isTaskCompleted(task) && (task.completeDate < new Date()));
 }
 
-function addNewAndUpdateTasksAsync() {
+function addNewAndUpdateTasks() {
     const taskNameElement = document.getElementsByName('newTaskName')[0];
     const completeDateElement = document.getElementsByName('newTaskExpectedCompleteDate')[0];
 
@@ -154,44 +104,11 @@ function addNewAndUpdateTasksAsync() {
         return;
     }
 
-    const xmlHttpRequest = new XMLHttpRequest();
-    xmlHttpRequest.open("POST", '/addTask', true);
-    xmlHttpRequest.onload = function() {
-        switch (xmlHttpRequest.status) {
-            case 401:
-                loadLoginAsync();
-                break;
-            case 200:
-                updateTasksAsync();
-                break;
-            default:
-                alert(xmlHttpRequest.statusText);
-                break;
-        }
-    };
-    xmlHttpRequest.send(new FormData(document.getElementById('new-task-form')));
+    socket.emit('add-task', taskNameElement.value, completeDateElement.value/*, file buffer*/);
 }
 
-function completeTaskAndUpdateTasksAsync(taskId) {
-    let data = new FormData();
-    data.append('taskId', taskId);
-
-    const xmlHttpRequest = new XMLHttpRequest();
-    xmlHttpRequest.open("POST", '/completeTask', true);
-    xmlHttpRequest.onload = function() {
-        switch (xmlHttpRequest.status) {
-            case 401:
-                loadLoginAsync();
-                break;
-            case 200:
-                updateTasksAsync();
-                break;
-            default:
-                alert(xmlHttpRequest.statusText);
-                break;
-        }
-    };
-    xmlHttpRequest.send(data);
+function completeTaskAndUpdateTasks(taskId) {
+    socket.emit('complete-task', taskId);
 }
 
 function isInputLegal(inputElement) {
