@@ -4,16 +4,15 @@ schema {
 }
 
 type Query {
-
+    getPage(token: String, page: PageEnum!): Page
+    getTasks(token: String, filters: [Boolean]!): [Task]
+    downloadAttachment(token: String, taskId: ID!): String
 }
 
 type Mutation {
-
-}
-
-type LoginInfo {
-    username: String!
-    password: String!
+    login(username: String!, password: String!): String
+    completeTask(token: String, taskId: ID!): Boolean
+    addTask(token: String, taskName: String!, taskCompleteDate: String!, jsonedAttachment: String): Boolean
 }
 
 type Task {
@@ -27,4 +26,9 @@ type Task {
 type Page {
     template: String!
     loc: String!
+}
+
+enum PageEnum {
+    LOGIN
+    INDEX
 }
