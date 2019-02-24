@@ -8,7 +8,10 @@ const fileUpload = require('express-fileupload');
 const taskSerializer = require('.' + path.sep + path.join('scripts', 'task-serializer'));
 const userSerializer = require('.' + path.sep + path.join('scripts', 'user-serializer'));
 const secureRandom = require('secure-random');
+const graphqlHTTP = require('express-graphql');
+const { buildSchema } = require('graphql');
 
+const resolver = require('.' + path.sep + path.join('graphql', 'resolver'));
 const indexRouter = require('.' + path.sep + path.join('routes', 'index'));
 
 const app = express();
@@ -72,10 +75,14 @@ app.set('view engine', 'ejs');
 app.use(fileUpload());
 app.use(logger('dev'));
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+app.use('/gql', graphqlHTTP({
+    schema: buildSchema(fs.readFileSync('.' + path.sep + path.join('graphql', 'schema.graphqls')).toString()),
+    rootValue: resolver,
+    graphiql: true
+}));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

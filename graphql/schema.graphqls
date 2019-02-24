@@ -12,14 +12,15 @@ type Query {
 type Mutation {
     login(username: String!, password: String!): String
     completeTask(token: String, taskId: ID!): Boolean
-    addTask(token: String, taskName: String!, taskCompleteDate: String!, jsonedAttachment: String): Boolean
+    addTask(token: String, taskName: String!, taskCompleteDate: String!, jsonedAttachment: String, filename: String): Boolean
 }
 
 type Task {
     id: ID!
     authorId: ID!
     name: String!
-    completionDate: String!
+    completeDate: String!
+    completed: Boolean!
     attachmentFileName: String
 }
 
