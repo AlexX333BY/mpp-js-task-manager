@@ -5,7 +5,7 @@ schema {
 
 type Query {
     getPage(token: String, page: PageEnum!): Page
-    getTasks(token: String, filters: [Boolean]!): [Task]
+    getTasks(token: String, filters: [Boolean]!): TasksResponse
     downloadAttachment(token: String, taskId: ID!): String
 }
 
@@ -21,6 +21,12 @@ type Task {
     name: String!
     completionDate: String!
     attachmentFileName: String
+}
+
+type TasksResponse {
+    tasks: [Task]!
+    template: String!
+    loc: String!
 }
 
 type Page {
