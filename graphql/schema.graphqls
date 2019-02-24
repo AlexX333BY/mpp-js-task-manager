@@ -6,7 +6,7 @@ schema {
 type Query {
     getPage(token: String, page: PageEnum!): Page
     getTasks(token: String, filters: [Boolean]!): TasksResponse
-    downloadAttachment(token: String, taskId: ID!): String
+    downloadAttachment(token: String, taskId: ID!): DownloadResponse
 }
 
 type Mutation {
@@ -28,6 +28,11 @@ type TasksResponse {
     tasks: [Task]!
     template: String!
     loc: String!
+}
+
+type DownloadResponse {
+    jsonedFile: String!
+    filename: String!
 }
 
 type Page {

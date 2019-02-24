@@ -78,7 +78,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/gql', graphqlHTTP({
+app.use('/', graphqlHTTP({
     schema: buildSchema(fs.readFileSync('.' + path.sep + path.join('graphql', 'schema.graphqls')).toString()),
     rootValue: resolver,
     graphiql: true

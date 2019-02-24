@@ -54,7 +54,21 @@ function createToken(user) {
 function getTasks(completionFilters, userId) {
     return { tasks: tasks.filter((task) => (task.authorId == userId) && completionFilters.includes(task.isCompleted())),
         template: getTaskTemplate(),
-        loc: taskLocalization };
+        loc: JSON.stringify(taskLocalization) };
+}
+
+function objectToBuffer(arr) {
+    let curElement = 0;
+
+    while (arr.hasOwnProperty(curElement)) {
+        ++curElement;
+    }
+    const size = curElement;
+    const buffer = Buffer.alloc(size);
+    for (curElement = 0; curElement < size; ++curElement) {
+        buffer[curElement] = arr[curElement];
+    }
+    return buffer;
 }
 
 module.exports = {
@@ -86,7 +100,10 @@ module.exports = {
             const userId = decodeUserFromToken(token).id,
                 task = tasks[taskId];
             if (task.authorId == userId) {
-                return JSON.stringify(fs.readFile(task.attachmentFileName));
+                return {
+                    jsonedFile: JSON.stringify(fs.readFileSync(task.attachmentFileName)),
+                    filename: task.attachmentFileName.split('/').pop()
+                };
             } else {
                 return null;
             }
@@ -115,7 +132,7 @@ module.exports = {
     completeTask: function ({token, taskId}) {
         if (isTokenValid(token)) {
             const userId = decodeUserFromToken(token).id,
-                task = tasks.filter((task) => (task.id === taskId) && (task.authorId === userId));
+                task = tasks.filter((task) => (task.id == taskId) && (task.authorId === userId));
             if (task.length > 0) {
                 task[0].complete();
                 updateTasksStorage();
@@ -140,7 +157,7 @@ module.exports = {
                 }
 
                 attachmentFileName = attachmentPath + filename;
-                fs.writeFileSync(attachmentFileName, JSON.parse(jsonedAttachment));
+                fs.writeFileSync(attachmentFileName, objectToBuffer(JSON.parse(jsonedAttachment)));
             }
 
             tasks.push(new Task(taskName, new Date(taskCompleteDate), newTaskId, decodeUserFromToken(token).id,
