@@ -1,0 +1,7 @@
+type Task {
+    id: ID!
+    authorId: ID!
+    name: String!
+    completionDate: String!
+    attachmentFileName: String
+}
