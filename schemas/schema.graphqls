@@ -1,0 +1,30 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Query {
+
+}
+
+type Mutation {
+
+}
+
+type LoginInfo {
+    username: String!
+    password: String!
+}
+
+type Task {
+    id: ID!
+    authorId: ID!
+    name: String!
+    completionDate: String!
+    attachmentFileName: String
+}
+
+type Page {
+    template: String!
+    loc: String!
+}
