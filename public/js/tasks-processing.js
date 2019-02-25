@@ -1,42 +1,108 @@
+function getToken() {
+    const neededTokens = document.cookie.split(';')
+        .map((cookie) => cookie.trim())
+        .filter((cookie) => cookie.startsWith('token='));
+    if (neededTokens.length > 0) {
+        return neededTokens[0].split('=')[1];
+    } else {
+        return null;
+    }
+}
+
+function setToken(token) {
+    document.cookie = `token=${token}`;
+}
+
+function createGraphQlFetchHeader(data) {
+    return {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
+        body: JSON.stringify(data)
+    };
+}
+
+function createGetPageQuery(pageEnum) {
+    return {
+        query: 'query GetPage($token: String, $page: PageEnum!) { getPage(token: $token, page: $page) { template loc } }',
+        variables: { token: getToken(), page: pageEnum }
+    };
+}
+
+function createGetTasksQuery(filters) {
+    return {
+        query: `query GetTasks($token: String, $filters: [Boolean]!) { getTasks(token: $token, filters: $filters) { 
+            tasks { id name completeDate completed attachmentFileName } template loc 
+        } }`,
+        variables: { token: getToken(), filters: filters }
+    };
+}
+
+function createDownloadAttachmentQuery(taskId) {
+    return {
+        query: 'query DownloadAttachment($token: String, $taskId: ID!) { downloadAttachment(token: $token, taskId: $taskId) { jsonedFile filename } }',
+        variables: { token: getToken(), taskId: taskId }
+    };
+}
+
+function createLoginMutation(username, password) {
+    return {
+        query: 'mutation Login($username: String!, $password: String!) { login(username: $username, password: $password) }',
+        variables: { username: username, password: password }
+    };
+}
+
+function createCompleteTaskMutation(taskId) {
+    return {
+        query: 'mutation CompleteTask($token: String, $taskId: ID!) { completeTask(token: $token, taskId: $taskId) }',
+        variables: { token: getToken(), taskId: taskId }
+    };
+}
+
+function createAddTaskMutation(taskName, taskCompleteDate, jsonedAttachment, filename) {
+    return {
+        query: `mutation AddTask($token: String, $taskName: String!, $taskCompleteDate: String!, $jsonedAttachment: String, $filename: String) { 
+            addTask(token: $token, taskName: $taskName, taskCompleteDate: $taskCompleteDate, jsonedAttachment: $jsonedAttachment, filename: $filename)
+        }`,
+        variables: { token: getToken(), taskName: taskName, jsonedAttachment: jsonedAttachment, filename: filename, taskCompleteDate: taskCompleteDate }
+    };
+}
+
 function onIndexLoad() {
-    loadIndexAsync();
+    loadIndex();
 }
 
-function loadIndexAsync() {
-    const xmlHttpRequest = new XMLHttpRequest();
-    xmlHttpRequest.open("GET", '/index', true);
-    xmlHttpRequest.onload = function() {
-        switch (xmlHttpRequest.status) {
-            case 401:
-                loadLoginAsync();
-                break;
-            case 200:
-                const response = JSON.parse(xmlHttpRequest.response);
-                document.title = response.loc.title;
-                document.getElementsByTagName('body')[0].innerHTML = ejs.render(response.template, response.loc);
-                updateTasksAsync();
-                break;
-            default:
-                alert(xmlHttpRequest.statusText);
-                break;
-        }
-    };
-    xmlHttpRequest.send(null);
+function loadIndex() {
+    fetch('/', createGraphQlFetchHeader(createGetPageQuery('INDEX')))
+        .then((response) => response.json())
+        .then((data) => {
+            const page = data.data.getPage;
+            if (page != null) {
+                const loc = JSON.parse(page.loc);
+                document.title = loc.title;
+                document.getElementsByTagName('body')[0].innerHTML = ejs.render(page.template, loc);
+                updateTasks();
+            } else {
+                loadLogin();
+            }
+        });
 }
 
-function loadLoginAsync() {
-    const xmlHttpRequest = new XMLHttpRequest();
-    xmlHttpRequest.open("GET", '/login', true);
-    xmlHttpRequest.onload = function() {
-        if (xmlHttpRequest.status === 200) {
-            const response = JSON.parse(xmlHttpRequest.response);
-            document.title = response.loc.title;
-            document.getElementsByTagName('body')[0].innerHTML = ejs.render(response.template, response.loc);
-        } else {
-            alert(xmlHttpRequest.statusText);
-        }
-    };
-    xmlHttpRequest.send(null);
+function loadLogin() {
+    fetch('/', createGraphQlFetchHeader(createGetPageQuery('LOGIN')))
+        .then((response) => response.json())
+        .then((data) => {
+            const page = data.data.getPage;
+            if (page != null) {
+                const loc = JSON.parse(page.loc);
+                document.title = loc.title;
+                document.getElementsByTagName('body')[0].innerHTML = ejs.render(page.template, loc);
+            } else {
+                loadLogin();
+            }
+        });
 }
 
 function onLoginQuery() {
@@ -53,53 +119,38 @@ function onLoginQuery() {
         return;
     }
 
-    const xmlHttpRequest = new XMLHttpRequest();
-    xmlHttpRequest.open("POST", '/login', true);
-    xmlHttpRequest.onload = function() {
-        switch (xmlHttpRequest.status) {
-            case 200:
-                loadIndexAsync();
-                break;
-            default:
-                alert(xmlHttpRequest.statusText);
-                break;
-        }
-    };
-    xmlHttpRequest.send(new FormData(document.getElementById('login-form')));
+    fetch('/', createGraphQlFetchHeader(createLoginMutation(username.value, password.value)))
+        .then((response) => response.json())
+        .then((data) => {
+            const token = data.data.login;
+            if (token != null) {
+                setToken(token);
+                loadIndex();
+            } else {
+                loadLogin();
+            }
+        });
 }
 
-function updateTasksAsync() {
-    const filterElements = document.getElementsByName('isCompletedFilter'),
-        filters = [],
-        statusRequestParameterName = 'isCompleted';
-
-    let filterElement;
-    for (let index = 0; index < filterElements.length; ++index) {
-        filterElement = filterElements[index];
-        if (filterElement.checked) {
-            filters.push(statusRequestParameterName + '=' + filterElement.value);
-        }
-    }
-
-    const xmlHttpRequest = new XMLHttpRequest();
-    xmlHttpRequest.open("GET", '/tasks?' + filters.join('&'), true);
-    xmlHttpRequest.onload = function() {
-        switch (xmlHttpRequest.status) {
-            case 401:
-                loadLoginAsync();
-                break;
-            case 200:
-                const response = JSON.parse(xmlHttpRequest.response);
-                document.getElementById('task-list').innerHTML = response.tasks.map(function (task) {
+function updateTasks() {
+    const filters = Array.from(document.getElementsByName('isCompletedFilter'))
+        .filter((element) => element.checked).map((element) => element.value === 'true');
+    fetch('/', createGraphQlFetchHeader(createGetTasksQuery(filters)))
+        .then((response) => response.json())
+        .then((data) => {
+            const response = data.data.getTasks;
+            if (response != null) {
+                const loc = JSON.parse(response.loc);
+                const tasks = Array.from(response.tasks);
+                tasks.forEach((task) => task.completeDate = new Date(Number(task.completeDate)));
+                document.getElementById('task-list').innerHTML = tasks.map(function (task) {
                     task.completeDate = new Date(task.completeDate);
-                    return createTaskEntry(task, response.template, response.loc);
+                    return createTaskEntry(task, response.template, loc);
                 }).join('');
-                break;
-            default:
-                alert(xmlHttpRequest.statusText);
-        }
-    };
-    xmlHttpRequest.send(null);
+            } else {
+                alert('Error updating tasks');
+            }
+        });
 }
 
 function createTaskEntry(task, template, loc) {
@@ -140,7 +191,7 @@ function isTaskExpired(task) {
     return (!isTaskCompleted(task) && (task.completeDate < new Date()));
 }
 
-function addNewAndUpdateTasksAsync() {
+function addNewAndUpdateTasks() {
     const taskNameElement = document.getElementsByName('newTaskName')[0];
     const completeDateElement = document.getElementsByName('newTaskExpectedCompleteDate')[0];
 
@@ -154,44 +205,70 @@ function addNewAndUpdateTasksAsync() {
         return;
     }
 
-    const xmlHttpRequest = new XMLHttpRequest();
-    xmlHttpRequest.open("POST", '/addTask', true);
-    xmlHttpRequest.onload = function() {
-        switch (xmlHttpRequest.status) {
-            case 401:
-                loadLoginAsync();
-                break;
-            case 200:
-                updateTasksAsync();
-                break;
-            default:
-                alert(xmlHttpRequest.statusText);
-                break;
-        }
-    };
-    xmlHttpRequest.send(new FormData(document.getElementById('new-task-form')));
+    function sendTaskAndUpdate(jsonedData, filename) {
+        fetch('/', createGraphQlFetchHeader(createAddTaskMutation(taskNameElement.value, completeDateElement.value, jsonedData, filename)))
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.data.addTask) {
+                    updateTasks();
+                } else {
+                    alert('Error adding task');
+                }
+            });
+    }
+
+    const file = document.getElementsByName('newTaskAttachment')[0];
+    if (file.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function(e)
+        {
+            sendTaskAndUpdate(JSON.stringify(new Uint8Array(e.target.result)), file.files[0].name);
+        };
+        reader.readAsArrayBuffer(file.files[0]);
+    } else {
+        sendTaskAndUpdate(null, null);
+    }
 }
 
-function completeTaskAndUpdateTasksAsync(taskId) {
-    let data = new FormData();
-    data.append('taskId', taskId);
+function completeTaskAndUpdateTasks(taskId) {
+    fetch('/', createGraphQlFetchHeader(createCompleteTaskMutation(taskId)))
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.data.completeTask) {
+                updateTasks();
+            } else {
+                alert('Error completing task');
+            }
+        });
+}
 
-    const xmlHttpRequest = new XMLHttpRequest();
-    xmlHttpRequest.open("POST", '/completeTask', true);
-    xmlHttpRequest.onload = function() {
-        switch (xmlHttpRequest.status) {
-            case 401:
-                loadLoginAsync();
-                break;
-            case 200:
-                updateTasksAsync();
-                break;
-            default:
-                alert(xmlHttpRequest.statusText);
-                break;
-        }
-    };
-    xmlHttpRequest.send(data);
+function bufferToArrayBuffer(buffer) {
+    const arrayBuffer = new ArrayBuffer(buffer.length),
+        view = new Uint8Array(arrayBuffer);
+    for (let i = 0; i < buffer.length; ++i) {
+        view[i] = buffer[i];
+    }
+    return arrayBuffer;
+}
+
+function downloadAttachment(taskId) {
+    fetch('/', createGraphQlFetchHeader(createDownloadAttachmentQuery(taskId)))
+        .then((response) => response.json())
+        .then((data) => {
+            const response = data.data.downloadAttachment;
+            if (response != null) {
+                const kek = [JSON.parse(response.jsonedFile)];
+                const temp = document.createElement('a'),
+                    file = new File([bufferToArrayBuffer(JSON.parse(response.jsonedFile).data)], response.filename);
+                temp.href = window.URL.createObjectURL(file);
+                temp.download = file.name;
+                document.body.appendChild(temp);
+                temp.click();
+                document.body.removeChild(temp);
+            } else {
+                alert('Download error');
+            }
+        });
 }
 
 function isInputLegal(inputElement) {

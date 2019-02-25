@@ -3,12 +3,9 @@
     <td class="task-spec"><%= expectedCompleteDate %></td>
     <td class="task-spec"><%= taskStatus %></td>
     <td class="task-spec">
-        <form method="get" action="/downloadTaskAttachment">
-            <input type="submit" value="<%= downloadAttachment %>" <%= downloadAttachmentDisabled %> />
-            <input type="hidden" name="taskId" value="<%= taskId %>" />
-        </form>
+        <input type="submit" value="<%= downloadAttachment %>" <%= downloadAttachmentDisabled %> onclick="downloadAttachment(<%= taskId %>)"/>
     </td>
     <td class="task-spec">
-        <input type="button" value="<%= completeTask %>" <%= completeTaskDisabled %> onclick="completeTaskAndUpdateTasksAsync(<%= taskId %>)"/>
+        <input type="button" value="<%= completeTask %>" <%= completeTaskDisabled %> onclick="completeTaskAndUpdateTasks(<%= taskId %>)"/>
     </td>
 </tr>

@@ -1,0 +1,46 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Query {
+    getPage(token: String, page: PageEnum!): Page
+    getTasks(token: String, filters: [Boolean]!): TasksResponse
+    downloadAttachment(token: String, taskId: ID!): DownloadResponse
+}
+
+type Mutation {
+    login(username: String!, password: String!): String
+    completeTask(token: String, taskId: ID!): Boolean
+    addTask(token: String, taskName: String!, taskCompleteDate: String!, jsonedAttachment: String, filename: String): Boolean
+}
+
+type Task {
+    id: ID!
+    authorId: ID!
+    name: String!
+    completeDate: String!
+    completed: Boolean!
+    attachmentFileName: String
+}
+
+type TasksResponse {
+    tasks: [Task]!
+    template: String!
+    loc: String!
+}
+
+type DownloadResponse {
+    jsonedFile: String!
+    filename: String!
+}
+
+type Page {
+    template: String!
+    loc: String!
+}
+
+enum PageEnum {
+    LOGIN
+    INDEX
+}
