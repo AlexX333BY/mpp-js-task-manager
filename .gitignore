@@ -64,3 +64,5 @@ typings/
 tasks/
 users/
 private.key
+package-lock.json
+
